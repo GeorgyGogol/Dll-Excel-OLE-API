@@ -13,18 +13,40 @@
 namespace exl {
 //---------------------------------------------------------------------------
 
-TExcelTableHeaders::TExcelTableHeaders(TExcelObjectRanged* Parent, const Variant& data)
-    : TExcelObjectRanged(Parent, data)
+TExcelTableHeaders::TExcelTableHeaders(TExcelObject* Parent, const Variant& data)
+    : TExcelCells(Parent, data)
 {
 }
 
-/* TExcelTableHeaders::TExcelTableHeaders(const TExcelTableHeaders&) {
+TExcelTableHeaders::TExcelTableHeaders(TExcelObject* Source)
+    : TExcelCells(Source->GetParent(), Source->getVariant())
+{}
+
+TExcelTableHeaders::~TExcelTableHeaders() 
+{
 }
 
-TExcelTableHeaders::TExcelTableHeaders(const TExcelCell&) {
-} */
+unsigned int TExcelTableHeaders::HeadersDepth(){
+    return GetRowCount();
+}
 
-TExcelTableHeaders::~TExcelTableHeaders() {
+unsigned int TExcelTableHeaders::HeadersCount() {
+    return GetColumnsCount();
+}
+
+
+String TExcelTableHeaders::GetTitle(unsigned int i) {
+    String out;
+    TExcelCells* select = GetCell(i + 1, 1);
+    out = select->ReadValueString();
+    delete select;
+    return out;
+}
+
+void TExcelTableHeaders::SetTitle(unsigned int i, const String& title) {
+    TExcelCells* select = GetCell(i + 1, 1);
+    select->InsertString(title);
+    delete select;
 }
 
 

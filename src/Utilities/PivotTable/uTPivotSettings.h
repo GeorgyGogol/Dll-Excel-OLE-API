@@ -1,20 +1,20 @@
-//---------------------------------------------------------------------------
+п»ї//---------------------------------------------------------------------------
 
 #ifndef uTPivotSettingsH
 #define uTPivotSettingsH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
 #include "../Table/uTTableCreator.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-// Размещение (агрегация) данных в сводной таблице
+// Р Р°Р·РјРµС‰РµРЅРёРµ (Р°РіСЂРµРіР°С†РёСЏ) РґР°РЅРЅС‹С… РІ СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†Рµ
 enum PivotDataPlace : char { Rows = 0, Columns = 1 };
 
 //---------------------------------------------------------------------------
-// Настройка - столбик и его агрегация
+// РќР°СЃС‚СЂРѕР№РєР° - СЃС‚РѕР»Р±РёРє Рё РµРіРѕ Р°РіСЂРµРіР°С†РёСЏ
 struct DLL_EI TExcelTablePivotField
 {
 	String ColumnName;
@@ -25,17 +25,18 @@ struct DLL_EI TExcelTablePivotField
 };
 
 //---------------------------------------------------------------------------
-// Класс-контейнер для настройки сводной таблицы
+// РљР»Р°СЃСЃ-РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РЅР°СЃС‚СЂРѕР№РєРё СЃРІРѕРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹
 class DLL_EI TPivotSettings
 {
 public:
+	TPivotSettings();
 	TPivotSettings(const String& pivotName);
 	~TPivotSettings();
 
-	typedef std::vector<TExcelTablePivotField> tSettingsArray;
+	typedef std::vector<TExcelTablePivotField> DLL_EI tSettingsArray;
 
 private:
-	String PivotName;		// Название таблицы
+	String PivotName;		// РќР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
 
 public:
 	String NewSheetName;
@@ -43,17 +44,17 @@ public:
 	String GetPivotName();
 	void SetPivotName(const String& name);
 
-	String PivotTitle;		// Заголовок
-	tSettingsArray Settings;	// Массив настроек, да в общем доступе
-	PivotDataPlace DataPlace; // Расположение значений - по строчкам или столбикам
-	bool ShowRowTotal;		// Показать Сумму по столбику
-	bool ShowColumnTotal;	// Показать Сумму по столбцу
+	String PivotTitle;		// Р—Р°РіРѕР»РѕРІРѕРє
+	tSettingsArray Settings;	// РњР°СЃСЃРёРІ РЅР°СЃС‚СЂРѕРµРє, РґР° РІ РѕР±С‰РµРј РґРѕСЃС‚СѓРїРµ
+	PivotDataPlace DataPlace; // Р Р°СЃРїРѕР»РѕР¶РµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ - РїРѕ СЃС‚СЂРѕС‡РєР°Рј РёР»Рё СЃС‚РѕР»Р±РёРєР°Рј
+	bool ShowRowTotal;		// РџРѕРєР°Р·Р°С‚СЊ РЎСѓРјРјСѓ РїРѕ СЃС‚РѕР»Р±РёРєСѓ
+	bool ShowColumnTotal;	// РџРѕРєР°Р·Р°С‚СЊ РЎСѓРјРјСѓ РїРѕ СЃС‚РѕР»Р±С†Сѓ
 
-	void Clear(); // Очистить настройки
-	void Add(const TExcelTablePivotField& setting);	// Добавить 
-	void AddRow(const String& сolumnName, const String& caption = "");
-	void AddColumn(const String& сolumnName, const String& caption = "");
-	void AddData(const String& сolumnName, const String& caption = "",
+	void Clear(); // РћС‡РёСЃС‚РёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё
+	void Add(const TExcelTablePivotField& setting);	// Р”РѕР±Р°РІРёС‚СЊ 
+	void AddRow(const String& СЃolumnName, const String& caption = "");
+	void AddColumn(const String& СЃolumnName, const String& caption = "");
+	void AddData(const String& СЃolumnName, const String& caption = "",
 		XlConsolidationFunction function = XlConsolidationFunction::xlUnknown);
 
 	unsigned int RowCount() const;

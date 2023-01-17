@@ -12,6 +12,11 @@
 //---------------------------------------------------------------------------
 namespace exl {
 
+TPivotSettings::TPivotSettings()
+{
+	Clear();
+}
+
 TPivotSettings::TPivotSettings(const String& pivotName)
 	: PivotName(pivotName)
 {

@@ -4,7 +4,7 @@
 #define uTExcelExceptionsH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
 #include "uDll.h"
 //---------------------------------------------------------------------------
@@ -17,18 +17,17 @@ public:
 		: Exception(message)
 	{}
 
+	ExcelException(const char* message)
+		: Exception(message)
+	{}
+
 protected:
 	ExcelException(const String& classWhere, const String& method, const String& message)
 		: Exception(classWhere + "::" + method + ": " + message)
 	{}
-};
 
-//---------------------------------------------------------------------------
-class DLL_EI ExcelTableCreatorException : public ExcelException
-{
-public:
-	ExcelTableCreatorException(const String& method, const String& message)
-		: ExcelException("TTableCreator", method, message)
+	ExcelException(const char* classWhere, const char* method, const char* message)
+		: Exception(String(classWhere) + "::" + String(method) + ": " + String(message))
 	{}
 };
 
