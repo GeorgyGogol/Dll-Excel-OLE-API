@@ -6,7 +6,7 @@
 
 //---------------------------------------------------------------------------
 #pragma argsused
-#include "..\include\ExcelAPI.h"
+#include "ExcelAPI.h"
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
 	CoInitialize(NULL);

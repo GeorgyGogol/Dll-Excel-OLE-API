@@ -4,7 +4,8 @@
 #pragma hdrstop
 
 #include "uTTableCreator.h"
-#include "uTExcelExceptions.h"
+#include "uTExcelTableCreatorException.h"
+#include "uTExcelSheet.h"
 
 //---------------------------------------------------------------------------
 
@@ -14,30 +15,43 @@
 namespace exl{
 //---------------------------------------------------------------------------    
 TTableCreator::TTableCreator()
+	: Sheet(NULL), Headers(NULL)
 {}
 
-TTableCreator::TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName)
+TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName)
 	: Sheet(NULL), Headers(NULL)
 {
 	PrepareNewData(sheet, dataSet, tableTitle, tableName);
 }
 
-TTableCreator::TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle)
+TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet, const String& tableTitle)
 	: Sheet(NULL), Headers(NULL)
 {
 	PrepareNewData(sheet, dataSet, tableTitle);
 }
 
-TTableCreator::TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet)
+TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet)
 	: Sheet(NULL), Headers(NULL)
 {
 	PrepareNewData(sheet, dataSet);
 }
 
-TTableCreator::TTableCreator(TExcelObjectRanged* sheet, TDBGridEh* gridEh, const String& tableName, const String& tableTitle)
-	: Sheet(sheet), TableName(tableName), Title(tableTitle)
+TTableCreator::TTableCreator(TExcelObject* sheet, TDBGridEh* gridEh, const String& tableTitle, const String& tableName)
+	: Sheet(NULL), Headers(NULL)
 {
-    init(gridEh);
+    PrepareNewData(sheet, gridEh, tableTitle, tableName);
+}
+
+TTableCreator::TTableCreator(TExcelObject* sheet, TDBGridEh* gridEh, const String& tableTitle)
+	: Sheet(NULL), Headers(NULL)
+{
+    PrepareNewData(sheet, gridEh, tableTitle);
+}
+
+TTableCreator::TTableCreator(TExcelObject* sheet, TDBGridEh* gridEh)
+	: Sheet(NULL), Headers(NULL)
+{
+    PrepareNewData(sheet, gridEh);
 }
 
 TTableCreator::~TTableCreator()
@@ -48,19 +62,19 @@ TTableCreator::~TTableCreator()
 void TTableCreator::readDataSet(TDataSet* dataSet) {
 	if (!Headers) throw ExcelTableCreatorException("readDataSet", "Headers is not created, cannot read DataSet!");
 
-	// Размеры таблицы
+	// Р Р°Р·РјРµСЂС‹ С‚Р°Р±Р»РёС†С‹
 	nRecords = dataSet->RecordCount;
 	unsigned int cols = Headers->CountVisible();
 
-	// Дальше подготовим данные к вставке
-	// Поймем что как
+	// Р”Р°Р»СЊС€Рµ РїРѕРґРіРѕС‚РѕРІРёРј РґР°РЅРЅС‹Рµ Рє РІСЃС‚Р°РІРєРµ
+	// РџРѕР№РјРµРј С‡С‚Рѕ РєР°Рє
 	Variant varArr(OPENARRAY(int, (1, nRecords, 1, cols)), varVariant);
 
-    // Считаем данные
-	unsigned int tabColPassed; // Кол-во пропущенных столбиков
-	unsigned int pos = 1; // Счетчик по записям
+    // РЎС‡РёС‚Р°РµРј РґР°РЅРЅС‹Рµ
+	unsigned int tabColPassed; // РљРѕР»-РІРѕ РїСЂРѕРїСѓС‰РµРЅРЅС‹С… СЃС‚РѕР»Р±РёРєРѕРІ
+	unsigned int pos = 1; // РЎС‡РµС‚С‡РёРє РїРѕ Р·Р°РїРёСЃСЏРј
 
-	// Буферы для разных типов
+	// Р‘СѓС„РµСЂС‹ РґР»СЏ СЂР°Р·РЅС‹С… С‚РёРїРѕРІ
 	String buf;
 	long double dBuf;
 	TDateTime dtBuf;
@@ -69,14 +83,16 @@ void TTableCreator::readDataSet(TDataSet* dataSet) {
 	{
         tabColPassed = 0;
 		for (unsigned int tabCol = 0; tabCol < Headers->Count(); tabCol++) {
-			if (!Headers->GetHeader(tabCol).Visible) {
+			if (!Headers->GetHeader(tabCol)->Visible) {
 				tabColPassed++;
 				continue;
 			}
 
 			//if (!src->Fields[tabCol]->IsNull)
-			buf = VarToStrDef(dataSet->Fields->Fields[tabCol]->Value, "0");
+			//buf = VarToStrDef(dataSet->Fields->Fields[tabCol]->Value, "0");
 			//else buf = "";
+
+			buf = dataSet->Fields->FieldByName(Headers->GetHeader(tabCol)->FieldName)->AsString;
 
 			if(TryStrToFloat(buf, dBuf)){
 				varArr.PutElement(dBuf, pos, tabCol + 1 - tabColPassed);
@@ -118,26 +134,28 @@ void TTableCreator::ResetData() {
 	varData = Null();
 	nRecords = 0;
 
-	Title = "TableStyleLight1";
+	Title = "";
+	TableName = "";
+	TableStyle = "TableStyleLight1";
 }
 
-void TTableCreator::PrepareNewData(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName)
+void TTableCreator::PrepareNewData(TExcelObject* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName)
 {
 	ResetData();
 
 	Sheet = sheet;
 	init(dataSet);
-	TableName = tableName;
 	Title = tableTitle;
+	TableName = tableName;
 }
 
-void TTableCreator::PrepareNewData(TExcelObjectRanged* sheet, TDBGridEh* gridEh, const String& tableTitle, const String& tableName) {
+void TTableCreator::PrepareNewData(TExcelObject* sheet, TDBGridEh* gridEh, const String& tableTitle, const String& tableName) {
 	ResetData();
 
 	Sheet = sheet;
 	init(gridEh);
-	TableName = tableName;
 	Title = tableTitle;
+	TableName = tableName;
 }
 
 bool TTableCreator::CanCreate() const
@@ -153,22 +171,23 @@ TExcelCells* TTableCreator::InsertData(unsigned int col, unsigned int row, bool 
 	check(col, row);
 
 	unsigned int sCol = col, sRow = row;
+	TExcelSheet* sheet = (TExcelSheet*)Sheet;
 
 	if (needInsertFieldNames){
 		TExcelCells* TableHeadersCells;
-		TableHeadersCells = (TExcelCells*)Sheet->selectRange(col, row, col + Headers->CountVisible() - 1, row + nRecords + Headers->Deep() - 1);
+		TableHeadersCells = sheet->SelectCells(col, row, col + Headers->CountVisible() - 1, row + nRecords + Headers->Deep() - 1);
 		TableHeadersCells->Insert(Headers->generateVariant());
 		sRow = row + nRecords + Headers->Deep();
 		delete TableHeadersCells;
 	}
 
 	TExcelCells* TableDataCells;
-	TableDataCells = (TExcelCells*)Sheet->selectRange(sCol, sRow, sCol + Headers->CountVisible() - 1, sRow + nRecords - 1);
+	TableDataCells = sheet->SelectCells(sCol, sRow, sCol + Headers->CountVisible() - 1, sRow + nRecords - 1);
 	TableDataCells->Insert(varData);
 	delete TableDataCells;
 
 	TExcelCells* out;
-	out = (TExcelCells*)Sheet->selectRange(col, row, sCol + Headers->CountVisible(), sRow + nRecords - 1);
+	out = sheet->SelectCells(col, row, sCol + Headers->CountVisible(), sRow + nRecords - 1);
 	out->Insert(varData);
 	return out;
 }
@@ -181,43 +200,45 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 
 	check(col, row);
 	
-	unsigned int maxColumnOnSheet = col + Headers->CountVisible();
+	unsigned int maxColumnOnSheet = col + Headers->CountVisible() - 1;
+	TExcelSheet* sheet = (TExcelSheet*)Sheet;
 
 	TExcelCells* TableTitleCells;
 	TExcelTableHeaders* tableHeaders;
 	TExcelCells* TableDataCells;
 
-    // Если есть заголовок - вставим
+    // Р•СЃР»Рё РµСЃС‚СЊ Р·Р°РіРѕР»РѕРІРѕРє - РІСЃС‚Р°РІРёРј
 	if (Title.Length() > 0) {
-		TableTitleCells = (TExcelCells*)(Sheet->selectRange(col, row, maxColumnOnSheet, row));
+		TableTitleCells = sheet->SelectCells(col, row, maxColumnOnSheet, row);
 		TableTitleCells->Merge()->InsertString(Title);
 		row += 2;
     }
 
-	// Вставим Заголовки
+	// Р’СЃС‚Р°РІРёРј Р—Р°РіРѕР»РѕРІРєРё
 	TExcelCells* TableHeadersCells;
-	TableHeadersCells = (TExcelCells*)Sheet->selectRange(col, row, maxColumnOnSheet, row);
+	TableHeadersCells = sheet->SelectCells(col, row, maxColumnOnSheet, row);
 	TableHeadersCells->Insert(Headers->generateVariant());
 	tableHeaders = new TExcelTableHeaders(TableHeadersCells);
 	delete TableHeadersCells;
+	TableHeadersCells = NULL;
     
-    // Вставим содержимое
-	TableDataCells = (TExcelCells*)Sheet->selectRange(
+    // Р’СЃС‚Р°РІРёРј СЃРѕРґРµСЂР¶РёРјРѕРµ
+	TableDataCells = sheet->SelectCells(
             col, 
 			row + 1,
 			maxColumnOnSheet,
 			row + 1 + nRecords - 1 
 			);
-	// Объясняю свой гений:
-	// Да, смещение на 1 вниз - заголовок. Потом вниз идем на nRecords - 1, т.к. поправка
-	// на 1 (для размещения 1й записи на 2й строке: строка 2 + 1 строка заголовка (это 3)
-	// + 1 запись (4, тут уже выделено 2 строки вниз) - 1 = 3 => после 2й строки (заголовки)
-	// будет выделена 3я строка)
+	// РћР±СЉСЏСЃРЅСЏСЋ СЃРІРѕР№ РіРµРЅРёР№:
+	// Р”Р°, СЃРјРµС‰РµРЅРёРµ РЅР° 1 РІРЅРёР· - Р·Р°РіРѕР»РѕРІРѕРє. РџРѕС‚РѕРј РІРЅРёР· РёРґРµРј РЅР° nRecords - 1, С‚.Рє. РїРѕРїСЂР°РІРєР°
+	// РЅР° 1 (РґР»СЏ СЂР°Р·РјРµС‰РµРЅРёСЏ 1Р№ Р·Р°РїРёСЃРё РЅР° 2Р№ СЃС‚СЂРѕРєРµ: СЃС‚СЂРѕРєР° 2 + 1 СЃС‚СЂРѕРєР° Р·Р°РіРѕР»РѕРІРєР° (СЌС‚Рѕ 3)
+	// + 1 Р·Р°РїРёСЃСЊ (4, С‚СѓС‚ СѓР¶Рµ РІС‹РґРµР»РµРЅРѕ 2 СЃС‚СЂРѕРєРё РІРЅРёР·) - 1 = 3 => РїРѕСЃР»Рµ 2Р№ СЃС‚СЂРѕРєРё (Р·Р°РіРѕР»РѕРІРєРё)
+	// Р±СѓРґРµС‚ РІС‹РґРµР»РµРЅР° 3СЏ СЃС‚СЂРѕРєР°)
 	TableDataCells->Insert(varData);
 	TExcelCells* tableData = new TExcelCells(Sheet, varData);
 
-    // Создадим таблицу в Экселе
-	Sheet->selectRange(col, row, maxColumnOnSheet, row + 1 + nRecords - 1);
+    // РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ РІ Р­РєСЃРµР»Рµ
+	sheet->SelectCells(col, row, maxColumnOnSheet, row + 1 + nRecords - 1);
 	
 	Variant vTable = Sheet->getVariant().OlePropertyGet("ListObjects").OleFunction("Add");
 	
@@ -226,10 +247,10 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	else
 		TableName = VarToStr(vTable.OlePropertyGet("Name"));
 	
-	if (TableStyle.Length() > 0) vTable.OlePropertySet("TableStyle", TableStyle);
+	if (TableStyle.Length() > 0) vTable.OlePropertySet("TableStyle", System::StringToOleStr(TableStyle));
 
-    // А теперь сделаем объект С++
-	TExcelTable* table = new TExcelTable(Sheet, TableName, tableHeaders, TableDataCells, TableTitleCells);
+    // Рђ С‚РµРїРµСЂСЊ СЃРґРµР»Р°РµРј РѕР±СЉРµРєС‚ РЎ++
+	TExcelTable* table = new TExcelTable(Sheet, vTable, TableName, tableHeaders, TableDataCells, TableTitleCells);
 
     return table;
 }

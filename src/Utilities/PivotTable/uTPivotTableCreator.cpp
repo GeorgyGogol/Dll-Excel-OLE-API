@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "uTPivotTableCreator.h"
+#include "uTExcelSheet.h"
 
 //---------------------------------------------------------------------------
 
@@ -21,26 +22,35 @@ TPivotTableCreator::~TPivotTableCreator() {
 }
 
 TExcelTable* TPivotTableCreator::initPivot(
-    TExcelObjectRanged* Sheet, // ????
+    TExcelObject* aimSheet,
     unsigned int col, unsigned int row, 
     TPivotSettings* PivotSettings
     )
 {
+	// TODO: Abomal program когда не находит поле
 	Variant vPivotTable, vPivotField, vTitle;
-    Variant vAim = Sheet->selectRange(col, row, col + PivotSettings->ColumnCount(), row + PivotSettings->RowCount())->getVariant();
 
-	vPivotTable = Sheet->getParentVariant().OleFunction(
+	TExcelSheet* sheet = (TExcelSheet*)(aimSheet);
+
+	if (PivotSettings->NewSheetName.Length() > 0) {
+		//sheet = sheet->get
+	}
+
+	Variant vAim = sheet->SelectCells(col, row, col + PivotSettings->ColumnCount(), row + PivotSettings->RowCount())->getVariant();
+
+	vPivotTable = sheet->GetParentVariant().OleFunction(
 		"PivotTableWizard", // Функция, отвечающая за построение
 		XlPivotTableSourceType::xlDatabase, // Тип источника (откуда)
 		SourceTable->getVariant(), // Сам источник
 		vAim, // Куда
-		System::StringToOleStr(PivotSettings->NewSheetName), // Название
-		PivotSettings->RowCount(),   // Кол-во строк
-		PivotSettings->ColumnCount()   // Кол-во столбцов
+		System::StringToOleStr(PivotSettings->GetPivotName()), // Название
+		PivotSettings->ShowRowTotal,     // Строка итогов по строкам
+		PivotSettings->ShowColumnTotal   // Строка итогов по столбцам
 	);
     
-    for (unsigned int i = 0; i < PivotSettings->Settings.size(); ++i) {
-		vPivotField = vPivotTable.OlePropertyGet("PivotFields", System::StringToOleStr(PivotSettings->Settings[i].ColumnName));
+	for (unsigned int i = 0; i < PivotSettings->Settings.size(); ++i) {
+		TExcelTablePivotField cur = PivotSettings->Settings[i];
+		vPivotField = vPivotTable.OlePropertyGet("PivotFields", System::StringToOleStr(cur.ColumnName));
 
 		vPivotField.OlePropertySet("Orientation", PivotSettings->Settings[i].Type);
 		vPivotField.OlePropertySet("Caption", System::StringToOleStr(PivotSettings->Settings[i].Caption));
@@ -57,9 +67,8 @@ TExcelTable* TPivotTableCreator::initPivot(
 
 	//vCell = SelectCells(1, 1);
 
-
 	if (PivotSettings->PivotTitle.Length() > 0){
-        vTitle = Sheet->select(col, row)->getVariant();
+		vTitle = sheet->SelectCell(1, 1)->getVariant();
 		vTitle.OlePropertySet("Value", System::StringToOleStr(PivotSettings->PivotTitle));
 	}
 
@@ -99,6 +108,7 @@ TExcelTable* TPivotTableCreator::CreateTable(
 */
 
 TExcelTable* TPivotTableCreator::CreateTable(
+    TExcelObject* aimSheet,
     unsigned int col, unsigned int row, 
     TPivotSettings* PivotSettings
     ) 
@@ -106,7 +116,7 @@ TExcelTable* TPivotTableCreator::CreateTable(
     if (col < 1) col = 1;
 	if (row < 3) row = 3;
 
-	TExcelObjectRanged* sheet = (TExcelObjectRanged*)SourceTable->getParent();
+	//TExcelObjectRanged* sheet = (TExcelObjectRanged*)SourceTable->getParent();
     /* if (PivotSettings->NewSheetName.Length() > 0){
         sheet = (TExcelObject*)(sheet->getParent())->Create();
 
@@ -117,7 +127,7 @@ TExcelTable* TPivotTableCreator::CreateTable(
         sheet->SetName(PivotSettings->NewSheetName);
     } */
 
-    return initPivot(sheet, col, row, PivotSettings);
+	return initPivot(aimSheet, col, row, PivotSettings);
 }
 
 }

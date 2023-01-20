@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+п»ї//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -19,6 +19,7 @@ TGridHeaders::TGridHeaders(TDataSet* dataSet)
 	buf.Visible = true;
 	for (int tabCol = 0; tabCol < dataSet->Fields->Count; tabCol++) {
 		buf.Caption = dataSet->Fields->Fields[tabCol]->FieldName;
+		buf.FieldName = dataSet->Fields->Fields[tabCol]->FieldName;
 		Add(buf);
 	}
 }
@@ -29,13 +30,14 @@ TGridHeaders::TGridHeaders(TDBGridEh* gridEh)
 	TGridHeader buf;
 	for (int tabCol = 0; tabCol < gridEh->Columns->Count; tabCol++) {
 		buf.Caption = gridEh->Columns->Items[tabCol]->Title->Caption;
+		buf.FieldName = gridEh->Columns->Items[tabCol]->FieldName;
 		buf.Visible = gridEh->Columns->Items[tabCol]->Visible;
 
 		Add(buf);
 	}
-    // (Г.Гоголев, 08.09.2022 14:40) TODO: Проработать вложенные заголовки
-    // Продублировано 22.12.2022. Тут уже целый проект, а проблема так и не
-    // решена.
+    // (Р“.Р“РѕРіРѕР»РµРІ, 08.09.2022 14:40) TODO: РџСЂРѕСЂР°Р±РѕС‚Р°С‚СЊ РІР»РѕР¶РµРЅРЅС‹Рµ Р·Р°РіРѕР»РѕРІРєРё
+    // РџСЂРѕРґСѓР±Р»РёСЂРѕРІР°РЅРѕ 22.12.2022. РўСѓС‚ СѓР¶Рµ С†РµР»С‹Р№ РїСЂРѕРµРєС‚, Р° РїСЂРѕР±Р»РµРјР° С‚Р°Рє Рё РЅРµ
+    // СЂРµС€РµРЅР°.
 }
 
 void TGridHeaders::Add(TGridHeader header) {
@@ -87,20 +89,21 @@ bool TGridHeaders::Eof() {
 	return it == Headers.end();
 }
 
-TGridHeader TGridHeaders::CurrentHeader() {
-    return (*it);
+TGridHeader* TGridHeaders::CurrentHeader() {
+	return &(*it);
 }
 
-TGridHeader TGridHeaders::GetHeader(unsigned int N) {
-    return Headers[N];
+TGridHeader* TGridHeaders::GetHeader(unsigned int N) {
+    return &Headers[N];
 }
 
 Variant TGridHeaders::generateVariant() {
-	Variant varHeaders(OPENARRAY(int, (1, 1, 1, nVisible)), varString); // !!!
-	
+	Variant varHeaders(OPENARRAY(int, (1, 1, 1, nVisible)), varVariant);
+
+	Begin();
 	for (unsigned int tabCol = 1; !Eof(); NextVisible(), ++tabCol)
 	{
-		varHeaders.PutElement(CurrentHeader().Caption, 1, tabCol); // 1 - строка
+		varHeaders.PutElement(CurrentHeader()->Caption, 1, tabCol); // 1 - СЃС‚СЂРѕРєР°
     }
 	
 	return varHeaders;

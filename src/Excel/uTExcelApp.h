@@ -4,13 +4,13 @@
 #define uTExcelAppH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
 #include "uTExcelWorkbook.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelApp : public TExcelObject
+class DLL_EI TExcelApp : public TExcelObjectTemplate<TExcelApp>
 {
 public:
 	TExcelApp();
@@ -27,27 +27,32 @@ private:
 	void Init();
 
 public:
-    // Создать/подключиться к приложению
+    // Создать экземпляр приложения
 	TExcelApp* CreateApp(bool visible);
 	TExcelApp* CreateApp(bool visible, unsigned int nSheetsInNewWorkbook);
-	TExcelApp* TryAttachApp();
+	
+	// Подключится/отключиться
 	TExcelApp* AttachApp();
-    // Отключится
 	void DeattachApp();
-    // Закрыть
-	void Close(bool silent = true);
-	//void Free(); // ???
+	
+	// Попробовать подключится, иначе - создать
+	TExcelApp* TryAttachApp();
 
+	// Закрыть 
+	void Close(bool silent = true); // Штатно
+	void Free(); // Внештатно
+
+	// Настройки приложения
 	TExcelApp* SetExcelNotifications(bool stat);
 	TExcelApp* SetSheetsInNewWorkbook(unsigned int N);
 
-	// Workbook - методы-обертки для объектов ниже по иерархии
+	// Всё, что Workbook касается - породить или получить текущую книгу
     unsigned int WorkbookCount();
 	TExcelWorkbook* CreateWorkbook();
 	TExcelWorkbook* CreateWorkbook(const String& workbookName);
 	TExcelWorkbook* GetCurrentWorkbook();
-    //TExcelWorkbook* ActiWorkbook(const String& workbookName);
-    //TExcelWorkbook* ActiWorkbook(unsigned int N);
+
+	TExcelWorkbook* OpenWorkbook(const String& path);
 };
 
 //---------------------------------------------------------------------------

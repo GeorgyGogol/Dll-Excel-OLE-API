@@ -4,7 +4,7 @@
 #define uTTableCreatorH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
 #include "uTGridHeaders.h"
 //---------------------------------------------------------------------------
@@ -14,15 +14,18 @@ class DLL_EI TTableCreator
 {
 public:
     TTableCreator();
-    TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName);
-    TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle);
-    TTableCreator(TExcelObjectRanged* sheet, TDataSet* dataSet);
+	TTableCreator(TExcelObject* pSheet, TDataSet* dataSet, const String& tableTitle, const String& tableName);
+	TTableCreator(TExcelObject* pSheet, TDataSet* dataSet, const String& tableTitle);
+	TTableCreator(TExcelObject* pSheet, TDataSet* dataSet);
 
-	TTableCreator(TExcelObjectRanged* sheet, TDBGridEh* gridEh, const String& tableName, const String& tableTitle);
+	TTableCreator(TExcelObject* pSheet, TDBGridEh* gridEh, const String& tableTitle, const String& tableName);
+	TTableCreator(TExcelObject* pSheet, TDBGridEh* gridEh, const String& tableTitle);
+	TTableCreator(TExcelObject* pSheet, TDBGridEh* gridEh);
+
     ~TTableCreator();
     
 private:
-	TExcelObjectRanged* Sheet;
+	TExcelObject* Sheet;
     TGridHeaders* Headers;
     Variant varData;
     unsigned int nRecords;
@@ -35,19 +38,18 @@ private:
     void check(unsigned int& col, unsigned int& row);
 
 public:
+    String Title;
     String TableName;
     String TableStyle;
-    String Title;
 
     void ResetData();
 
-    void PrepareNewData(TExcelObjectRanged* sheet, TDataSet* dataSet, const String& tableTitle = "", const String& tableName = "");
-    void PrepareNewData(TExcelObjectRanged* sheet, TDBGridEh* gridEh, const String& tableTitle = "", const String& tableName = "");
+    void PrepareNewData(TExcelObject* sheet, TDataSet* dataSet, const String& tableTitle = "", const String& tableName = "");
+    void PrepareNewData(TExcelObject* sheet, TDBGridEh* gridEh, const String& tableTitle = "", const String& tableName = "");
 
     bool CanCreate() const;
 
     TExcelCells* InsertData(unsigned int col, unsigned int row, bool needInsertFieldNames = false);
-    //TExcelTable* InsertTable(unsigned int col, unsigned int row);
     TExcelTable* CreateTable(unsigned int col, unsigned int row);
 
 };

@@ -4,13 +4,14 @@
 #define uTExcelSheetH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
-#include "../PivotTable/uTPivotTableCreator.h"
+#include "../Utilities/PivotTable/uTPivotTableCreator.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelSheet : public TExcelObjectRanged {
+class DLL_EI TExcelSheet : public TExcelObjectRangedTemplate<TExcelSheet> 
+{
 public:
     TExcelSheet(TExcelObject* pParent, const Variant& data);
     TExcelSheet(const TExcelSheet&);
@@ -21,7 +22,7 @@ protected:
 
 public:
     // Одна ячейка
-	TExcelCell* SelectCell(unsigned int col, unsigned int row);
+	TExcelCells* SelectCell(unsigned int col, unsigned int row);
 
     // Несколько ячеек
 	TExcelCells* SelectCells(
@@ -47,16 +48,19 @@ public:
 		bool needDisableSet = false
 	);
 
-	// Вставка с созданием НАСТОЯЩЕЙ ТАБЛИЦЫ как объекта
+	// Создать таблицу в диапозоне
+	// TExcelTable* CreateTable(unsigned int startColumn, unsigned int startRow);
+
+	// Вставка с созданием НАСТОЯЩЕЙ ТАБЛИЦЫ как объекта в координаты
  	TExcelTable* CreateTable(
 		unsigned int startColumn, unsigned int startRow,
-		TDataSet* dataSet, const String& tableName, const String& tableTitle,
+		TDataSet* dataSet, const String& tableTitle, const String& tableName,
 		bool needDisableSet = false
 	);
  	
 	TExcelTable* CreateTable(
 		unsigned int startColumn, unsigned int startRow,
-		TDataSet* dataSet, const String& tableName,
+		TDataSet* dataSet, const String& tableTitle,
 		bool needDisableSet = false
 	);
 
@@ -66,31 +70,66 @@ public:
 		bool needDisableSet = false
 	);
 
-
-
-
-
-//#ifdef DbgridehHPP
-	TExcelTable* CreateTable(
-		unsigned int startColumn, unsigned int startRow,
-		TDBGridEh* gridEh, const String& tableName, const String& tableTitle,
+	// Без координат
+ 	TExcelTable* CreateTable(
+		TDataSet* dataSet, const String& tableTitle, const String& tableName,
 		bool needDisableSet = false
 	);
-//#endif
+	
+ 	TExcelTable* CreateTable(
+		TDataSet* dataSet, const String& tableTitle,
+		bool needDisableSet = false
+	);
+ 	
+	TExcelTable* CreateTable(
+		TDataSet* dataSet,
+		bool needDisableSet = false
+	);
 
+	// Тут на основе GridEh
+	TExcelTable* CreateTable(
+		unsigned int startColumn, unsigned int startRow,
+		TDBGridEh* gridEh, const String& tableTitle, const String& tableName,
+		bool needDisableSet = false
+	);
+	
+	TExcelTable* CreateTable(
+		unsigned int startColumn, unsigned int startRow,
+		TDBGridEh* gridEh, const String& tableTitle,
+		bool needDisableSet = false
+	);
+	
+	TExcelTable* CreateTable(
+		unsigned int startColumn, unsigned int startRow,
+		TDBGridEh* gridEh,
+		bool needDisableSet = false
+	);
+	
+	// Без координат
+	TExcelTable* CreateTable(
+		TDBGridEh* gridEh, const String& tableTitle, const String& tableName,
+		bool needDisableSet = false
+	);
+
+	TExcelTable* CreateTable(
+		TDBGridEh* gridEh, const String& tableTitle,
+		bool needDisableSet = false
+	);
+
+	TExcelTable* CreateTable(
+		TDBGridEh* gridEh,
+		bool needDisableSet = false
+	);
+
+	// Сводная таблица
 	TExcelTable* CreatePivotTable(
 		unsigned int startColumn, unsigned int startRow,
 		TExcelTable* srcTable,
 		TPivotSettings* pivotSettings
 	);
-	
-	/* TExcelTable* CreatePivotTable(
-		unsigned int startColumn, unsigned int startRow,
-		const String& srcTable,
-		const String& pivotName,
-		TPivotSettings* pivotSettings
-	); */
 
+	// Найти и вернуть таблицу
+	TExcelTable* GetTable(const String& tableName);
 
     // Место для диаграммм
 };

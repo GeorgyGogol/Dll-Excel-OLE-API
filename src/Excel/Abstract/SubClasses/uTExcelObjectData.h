@@ -1,20 +1,22 @@
-//---------------------------------------------------------------------------
+п»ї//---------------------------------------------------------------------------
 
 #ifndef uTExcelObjectDataH
 #define uTExcelObjectDataH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
+// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
 #include "uTExcelObjectNode.h"
 //---------------------------------------------------------------------------
 namespace exl {
+//---------------------------------------------------------------------------
 class DLL_EI TExcelObjectData
 {
 public:
+protected:
     TExcelObjectData();
     TExcelObjectData(const Variant& data);
-    TExcelObjectData(const TExcelObjectData&);
+	TExcelObjectData(const TExcelObjectData&);
 	~TExcelObjectData();
     //void operator=();
 
@@ -22,17 +24,16 @@ protected:
     Variant vData;
     Variant vDataChild;
 
-    // Обще-типовые обертки функций для внутреннего использования
+    void checkDataValide();
+
+    // РћР±С‰Рµ-С‚РёРїРѕРІС‹Рµ РѕР±РµСЂС‚РєРё С„СѓРЅРєС†РёР№ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРµРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
 	unsigned int getChildCountByType(const String& oType);
 	void seekAndSetDataChild(const String& oType, const String& name);
     void seekAndSetDataChild(const String& oType, unsigned int Num);
 
 public:
-    // Это для особых извращений, которых нет в типовых решениях
-    Variant getVariant();
-
-    void Show();
-    void Hide();
+    // Р­С‚Рѕ РґР»СЏ РѕСЃРѕР±С‹С… РёР·РІСЂР°С‰РµРЅРёР№, РєРѕС‚РѕСЂС‹С… РЅРµС‚ РІ С‚РёРїРѕРІС‹С… СЂРµС€РµРЅРёСЏС…
+	Variant getVariant();
 
 };
 

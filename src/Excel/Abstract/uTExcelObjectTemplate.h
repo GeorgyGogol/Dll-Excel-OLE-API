@@ -1,38 +1,37 @@
 //---------------------------------------------------------------------------
 
-#ifndef uTExcelObjectNodeH
-#define uTExcelObjectNodeH
+#ifndef uTExcelObjectTemplateH
+#define uTExcelObjectTemplateH
 
 //---------------------------------------------------------------------------
 // Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
 //---------------------------------------------------------------------------
-#include "../../uTExcelEnums.h"
-#include <list>
+#include "uTExcelObject.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelObjectNode 
+template<class T>
+class DLL_EI TExcelObjectTemplate : public TExcelObject
 {
 public:
+	TExcelObjectTemplate();
+	TExcelObjectTemplate(TExcelObject* pParent, const Variant& data);
+	TExcelObjectTemplate(const TExcelObject& src);
 protected:
-    TExcelObjectNode();
-    TExcelObjectNode(TExcelObjectNode* pParent);
-	TExcelObjectNode(const TExcelObjectNode& src);
-	~TExcelObjectNode();
-
-private:
-	TExcelObjectNode* Parent;
-	std::list<TExcelObjectNode*> Childs;
-
-	void AddChildClass(TExcelObjectNode* child);
-	void RemoveChildClass(TExcelObjectNode* child);
+	~TExcelObjectTemplate();
 
 protected:
-	TExcelObjectNode* getParentNode() const;
-    
+
+public:
+	T* Show();
+	T* Hide();
+	T* SetName(const String& newName);
+
 };
 
 }
+
 //---------------------------------------------------------------------------
 #endif
+
 
