@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -12,11 +12,58 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
+TExcelTableColumn::TExcelTableColumn(TExcelObject* pParent, const Variant& data)
+	: TExcelObjectRangedTemplate<TExcelTableColumn>(pParent, data)
+	{}
+
+TExcelTableColumn::TExcelTableColumn(TExcelTableColumn& src)
+	: TExcelObjectRangedTemplate<TExcelTableColumn>(src)
+{}
+
+TExcelTableColumn::~TExcelTableColumn() {}
+
+TExcelTableColumn* TExcelTableColumn::SetIdentity(int start, int step){
+	vData.OlePropertyGet("Range").OlePropertySet("FormulaR1C1", "=R[-1]C+1");
+	vData.OlePropertyGet("Range").OlePropertyGet("Item", 2).OlePropertySet("FormulaR1C1", "=1");
+	return this;
+}
+
+TExcelTableColumn* TExcelTableColumn::SetHorizontalAlign(ExcelTextAlign align) {}
+TExcelTableColumn* TExcelTableColumn::SetVerticalAlign(ExcelTextAlign align) {}
+
+TExcelTableColumn* TExcelTableColumn::SetBorders() {}
+
+TExcelTableColumn* TExcelTableColumn::SetWidth() {}
+TExcelTableColumn* TExcelTableColumn::SetHeight() {}
+TExcelTableColumn* TExcelTableColumn::AutoSize() {}
+
+TExcelTableColumn* TExcelTableColumn::SetFormat() {}
+
+//---------------------------------------------------------------------------
+TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName)
+    : TExcelObjectTemplate<TExcelTable>(pSheet, Null())
+{
+    Variant vParent = GetParentVariant();
+    vData = vParent.OlePropertyGet("ListObjects").OlePropertyGet("Item", System::StringToOleStr(tableName));
+}
+
+
 TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable)
     : TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
 {
-    Variant vFields, vHeaders;
-    vFields = vTable.OlePropertyGet("Range");
+}
+
+TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, const Variant& vTitle)
+    : TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
+{
+    Title = new TExcelCells(this, vTitle);
+}
+
+
+TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, TExcelCells* eTitle)
+	: TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
+{
+	Title = new TExcelCells(this, eTitle->getVariant());
 }
 
 /*
@@ -29,21 +76,26 @@ TExcelTable::TExcelTable(TExcelObjectRanged* Sheet, const Variant& name, const V
 }
 */
 
+/*
 TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data, TExcelCells* titleCells)
 	: TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
-		, Headers(headers), Data(data), Title(titleCells)
+		//, Headers(headers), Data(data)
+        , Title(titleCells)
 {
 }
 
 TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data, TExcelCells* titleCells)
 	: TExcelObjectTemplate<TExcelTable>(pSheet, Null())
-		, Headers(headers), Data(data), Title(titleCells)
+		//, Headers(headers), Data(data)
+        , Title(titleCells)
 {
     //vData = 
 }
 
 TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data)
-	: TExcelObjectTemplate<TExcelTable>(pSheet, Null()), Headers(headers), Data(data), Title(NULL)
+	: TExcelObjectTemplate<TExcelTable>(pSheet, Null())
+        //, Headers(headers), Data(data)
+        , Title(NULL)
 {
 }
 
@@ -62,10 +114,14 @@ TExcelTable::TExcelTable(TExcelObjectRanged* Sheet, TExcelCell* cells, unsigned 
 */
 
 TExcelTable::~TExcelTable() {
-    //Parent->RemoveChildClass(this);
-	delete Title;
-    delete Headers;
-    delete Data;
+    // Это не нужно, т.к. дуструктор табицы дергает деструкторы дочерних элементов.
+    // Да, Title - это дочерний. Если есть.
+    /*
+    if (Title) {
+	    delete Title;
+        Title = NULL;
+    }
+    */
 }
 
 String TExcelTable::GetTitle()
@@ -89,27 +145,83 @@ TExcelCells* TExcelTable::GetHeader(unsigned int N) {
 	return out;
 }
 
+TExcelCells* TExcelTable::GetHeaders() {
+    vDataChild = vData.OlePropertyGet("HeaderRowRange");
+
+    TExcelCells* out = new TExcelCells(this, vDataChild);
+	return out;
+}
+
 TExcelTableColumn* TExcelTable::GetColumn(unsigned int N)
 {
-    vDataChild = vData.OlePropertyGet("ListColumns", N);
+    vDataChild = vData.OlePropertyGet("ListColumns", N + 1);
 
     TExcelTableColumn* out = new TExcelTableColumn(this, vDataChild);
     return out;
 }
 
+unsigned int TExcelTable::ColumnsCount()
+{
+    return getChildCountByType("ListColumns");
+}
+
 TExcelCells* TExcelTable::GetField(unsigned int col, unsigned int row)
 {
-    vDataChild = vData.OlePropertyGet("ListRows", row).OlePropertyGet("Range").OlePropertyGet("Item", 1, col);
+	col++;
+	row++;
+	vDataChild = vData.OlePropertyGet("ListRows", row).OlePropertyGet("Range").OlePropertyGet("Item", 1, col);
     TExcelCells* out = new TExcelCells(this, vDataChild);
     return out;
 }
 
-void* TExcelTable::AddRow()
+unsigned int TExcelTable::RowsCount()
 {
-    vDataChild = vData.OlePropertyGet("ListRows").OleProcedure("Add");
-    //return 
+	return getChildCountByType("ListRows");
 }
 
-//---------------------------------------------------------------------------
+TExcelTable* TExcelTable::AddRow()
+{
+    //if (pAddRow) pAddRow();
+    vData.OlePropertyGet("ListRows").OleProcedure("Add");
+    return this;
 }
+
+TExcelTable* TExcelTable::AddRows(TDataSet* src, const Variant& nullValue)
+{
+	unsigned int colCnt = src->FieldCount;
+	unsigned int rowCnt = src->RecordCount;
+	unsigned int startPos = getChildCountByType("ListRows");
+
+	if (colCnt != ColumnsCount()) throw Exception("TExcelTable::AddRows: colCnt != ColumnsCount");
+
+	String sNullVal = "";
+	if (!nullValue.IsNull()) {
+		sNullVal = VarToStr(nullValue);
+	}
+
+	unsigned int rPos = 1;
+	for (src->First(); !src->Eof && rPos < rowCnt + 1; src->Next(), rPos++)
+	{
+		Variant vRow(OPENARRAY(int, (1, 1, 1, colCnt)), varVariant);
+		Variant vElement;
+		for (unsigned int j = 1; j < colCnt + 1; j++) {
+			vElement = src->Fields->Fields[j - 1]->Value;
+
+			InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
+		}
+		vData.OlePropertyGet("ListRows").OleProcedure("Add");
+        vData.OlePropertyGet("ListRows", startPos + rPos).OlePropertyGet("Range").OlePropertySet("Value", vRow);
+	}
+
+    return this;
+}
+
+TExcelTable* TExcelTable::DeleteRow(unsigned int row)
+{
+	vData.OlePropertyGet("ListRows", row + 1).OleProcedure("Delete");
+	return this;
+}
+
+}
+
 

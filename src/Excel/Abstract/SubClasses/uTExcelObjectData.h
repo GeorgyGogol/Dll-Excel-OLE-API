@@ -4,19 +4,17 @@
 #define uTExcelObjectDataH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "uTExcelObjectNode.h"
+#include "uDll.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
 class DLL_EI TExcelObjectData
 {
 public:
-protected:
     TExcelObjectData();
     TExcelObjectData(const Variant& data);
 	TExcelObjectData(const TExcelObjectData&);
+protected:
 	~TExcelObjectData();
     //void operator=();
 

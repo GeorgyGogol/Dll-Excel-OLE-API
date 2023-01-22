@@ -277,9 +277,43 @@ TExcelTable* TExcelSheet::CreatePivotTable(
 
 TExcelTable* TExcelSheet::GetTable(const String& tableName)
 {
-	vDataChild = vData.OlePropertyGet("ListObjects", System::StringToOleStr(tableName));
+	//seekAndSetDataChild("ListObjects", tableName);
+//	vDataChild = ; //;
+
+	int t = vData.OlePropertyGet("ListObjects").OlePropertyGet("Count");
+	vDataChild = vData.OlePropertyGet("ListObjects").OlePropertyGet("Item", System::StringToOleStr(tableName));
+
+	//vDataChild = GetParentVariant()
+
+	//.OlePropertyGet("ListObjects");
+
+	//int y = vDataChild.OlePropertyGet("Count");
+
+	// ; //.OlePropertyGet("Item", );
 	TExcelTable* out = new TExcelTable(this, vDataChild);
 	return out;
+}
+
+TExcelNameItem* TExcelSheet::GetNameItem(const String& itemName)
+{
+    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+    return out;
+}
+
+TExcelNameItem* TExcelSheet::GetNameItem(unsigned int N)
+{
+    seekAndSetDataChild("Names", N);
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+    return out;
+}
+
+TExcelNameItem* TExcelSheet::AddNamedItem(const String& itemName)
+{
+	vDataChild = vData.OlePropertyGet("Names");
+	vDataChild.OleProcedure("Add", System::StringToOleStr(itemName));
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+    return out;
 }
 
 }

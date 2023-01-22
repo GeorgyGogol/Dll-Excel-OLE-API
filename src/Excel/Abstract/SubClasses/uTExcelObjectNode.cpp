@@ -58,7 +58,7 @@ void TExcelObjectNode::AddChildClass(TExcelObjectNode* child)
     Childs.push_back(child);
 }
 
-void TExcelObjectNode::RemoveChildClass(TExcelObjectNode* child) 
+void TExcelObjectNode::RemoveChildClass(TExcelObjectNode* child)
 {
     Childs.remove(child);
 }
@@ -69,4 +69,5 @@ TExcelObjectNode* TExcelObjectNode::getParentNode() const
 }
 
 }
+
 

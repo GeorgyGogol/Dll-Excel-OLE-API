@@ -67,56 +67,64 @@ TExcelObject* TExcelObject::SetName(const String& newName) {
     vData.OlePropertySet("Name", System::StringToOleStr(newName));
     return this;
 }
-
-void* TExcelObject::AddNamedItem(const String& itemName)
+/*
+TExcelNameItem* TExcelObject::GetNameItem(const String& itemName)
 {
-    checkDataValide();
-    vDataChild = vData.OlePropertyGet("Names").OleProcedure("Add", System::StringToOleStr(itemName), "=\"\"");
-    //return GetCurrentSelectedChild();
+    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+    return out;
 }
 
-void* TExcelObject::AddNamedItem(const String& itemName, const String& formula)
+TExcelNameItem* TExcelObject::GetNameItem(unsigned int N)
 {
-    checkDataValide();
-    String itemValue = "=\"" + formula + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OleProcedure("Add", System::StringToOleStr(itemName), System::StringToOleStr(itemValue));
-    //return GetCurrentSelectedChild();
+    seekAndSetDataChild("Names", N);
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+    return out;
 }
+
+TExcelNameItem* TExcelObject::AddNamedItem(const String& itemName)
+{
+	vDataChild = vData.OlePropertyGet("Names");
+	vDataChild.OleProcedure("Add", System::StringToOleStr(itemName));
+    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
+	return out;
+}       */
 
 /* String StrToFormul(const String& str){
     return "=\"" + str + "\"";
 } */
 
-void* TExcelObject::AddNamedItem(const String& itemName, const String& formula, const String& comment)
+/* void* TExcelObject::AddNamedItem(const String& itemName, const String& formula, const String& comment)
 {
     checkDataValide();
     String itemValue = "=\"" + formula + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OleProcedure("Add", System::StringToOleStr(itemName), System::StringToOleStr(itemValue));
-    vDataChild.OlePropertySet("Comment", System::StringToOleStr(comment));
-    //return GetCurrentSelectedChild();
-}
+	vDataChild = vData.OlePropertyGet("Names");
+	vDataChild.OleProcedure("Add", System::StringToOleStr(itemName), System::StringToOleStr(itemValue));
+	vDataChild.OlePropertySet("Comment", System::StringToOleStr(comment));
+	//return GetCurrentSelectedChild();
+} */
 
-void* TExcelObject::SetItem(const String& itemName, const String& data)
+/* void* TExcelObject::SetItem(const String& itemName, const String& data)
 {
     checkDataValide();
     String itemValue = "=\"" + data + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OlePropertyGet("Item", System::StringToOleStr(itemName));
+    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
     vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
 }
 
 void* TExcelObject::SetItem(const String& itemName, const Variant& data)
 {
-    checkDataValide();
-    String itemValue = "=\"" + VarToStr(data) + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OlePropertyGet("Item", System::StringToOleStr(itemName));
-    vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
+	checkDataValide();
+	String itemValue = "=\"" + VarToStr(data) + "\"";
+	vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
+	vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
 }
 
 void* TExcelObject::SetItem(unsigned int i, const String& data)
 {
     checkDataValide();
     String itemValue = "=\"" + data + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OlePropertyGet("Item", int(i));
+	vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", int(i));
     vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
 }
 
@@ -124,18 +132,60 @@ void* TExcelObject::SetItem(unsigned int i, const Variant& data)
 {
     checkDataValide();
     String itemValue = "=\"" + VarToStr(data) + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OlePropertyGet("Item", int(i));
+    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", int(i));
     vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
-}
+} */
 
 
 String TExcelObject::GetName()
 {
     checkDataValide();
     Variant name = vData.OlePropertyGet("Name");
-    String out = VarToStr(name);
-    return out;
+    return VarToStr(name);
+}
+
+void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue)
+{
+	/*
+	String buf;
+	long double dBuf;
+	TDateTime dtBuf;
+
+	buf = VarToStrDef(vData, sNullValue.c_str());
+
+	if(TryStrToFloat(buf, dBuf)){
+		vCell.OlePropertySet("Value", dBuf);
+	}
+	else if (TryStrToTime(buf, dtBuf)){
+		vCell.OlePropertySet("Value", dtBuf);
+	}
+	else {
+
+	}
+	*/
+
+	vCell.OlePropertySet("Value", vData);
+}
+
+void InsertIntoVarArray(const Variant& vData, Variant& varArr, unsigned int row, unsigned int col, const String& sNullValue)
+{
+	String buf;
+	long double dBuf;
+	TDateTime dtBuf;
+
+	buf = VarToStrDef(vData, sNullValue.c_str());
+
+	if(TryStrToFloat(buf, dBuf)){
+		varArr.PutElement(dBuf, row, col);
+	}
+	else if (TryStrToTime(buf, dtBuf)){
+		varArr.PutElement(dtBuf, row, col);
+	}
+	else {
+		varArr.PutElement(buf, row, col);
+	}
 }
 
 }
+
 

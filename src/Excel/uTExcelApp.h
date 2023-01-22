@@ -4,8 +4,6 @@
 #define uTExcelAppH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
 #include "uTExcelWorkbook.h"
 //---------------------------------------------------------------------------
 namespace exl {
@@ -27,6 +25,8 @@ private:
 	void Init();
 
 public:
+	//TExcelApp* SetWorkfolder(const String& path);
+
     // Создать экземпляр приложения
 	TExcelApp* CreateApp(bool visible);
 	TExcelApp* CreateApp(bool visible, unsigned int nSheetsInNewWorkbook);
@@ -55,9 +55,7 @@ public:
 	TExcelWorkbook* OpenWorkbook(const String& path);
 };
 
-//---------------------------------------------------------------------------
 }
 //---------------------------------------------------------------------------
 #endif
-
 

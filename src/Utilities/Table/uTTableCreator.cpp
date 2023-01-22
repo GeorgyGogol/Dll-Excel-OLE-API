@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -12,8 +12,8 @@
 #pragma package(smart_init)
 
 //---------------------------------------------------------------------------
-namespace exl{
-//---------------------------------------------------------------------------    
+namespace exl {
+//---------------------------------------------------------------------------
 TTableCreator::TTableCreator()
 	: Sheet(NULL), Headers(NULL)
 {}
@@ -204,7 +204,7 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	TExcelSheet* sheet = (TExcelSheet*)Sheet;
 
 	TExcelCells* TableTitleCells;
-	TExcelTableHeaders* tableHeaders;
+	//TExcelTableHeaders* tableHeaders;
 	TExcelCells* TableDataCells;
 
     // Если есть заголовок - вставим
@@ -218,9 +218,9 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	TExcelCells* TableHeadersCells;
 	TableHeadersCells = sheet->SelectCells(col, row, maxColumnOnSheet, row);
 	TableHeadersCells->Insert(Headers->generateVariant());
-	tableHeaders = new TExcelTableHeaders(TableHeadersCells);
-	delete TableHeadersCells;
-	TableHeadersCells = NULL;
+	//tableHeaders = new TExcelTableHeaders(TableHeadersCells);
+	//delete TableHeadersCells;
+	//TableHeadersCells = NULL;
     
     // Вставим содержимое
 	TableDataCells = sheet->SelectCells(
@@ -235,7 +235,7 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	// + 1 запись (4, тут уже выделено 2 строки вниз) - 1 = 3 => после 2й строки (заголовки)
 	// будет выделена 3я строка)
 	TableDataCells->Insert(varData);
-	TExcelCells* tableData = new TExcelCells(Sheet, varData);
+	//TExcelCells* tableData = new TExcelCells(Sheet, varData, TableTitleCells);
 
     // Создадим таблицу в Экселе
 	sheet->SelectCells(col, row, maxColumnOnSheet, row + 1 + nRecords - 1);
@@ -250,11 +250,11 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	if (TableStyle.Length() > 0) vTable.OlePropertySet("TableStyle", System::StringToOleStr(TableStyle));
 
     // А теперь сделаем объект С++
-	TExcelTable* table = new TExcelTable(Sheet, vTable, TableName, tableHeaders, TableDataCells, TableTitleCells);
+	TExcelTable* table = new TExcelTable(Sheet, vTable, TableTitleCells);
 
     return table;
 }
 
-
 }
+
 

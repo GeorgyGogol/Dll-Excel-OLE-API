@@ -4,13 +4,12 @@
 #define uTExcelWorkbookH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
 #include "uTExcelSheet.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
 class DLL_EI TExcelWorkbook : public TExcelObjectTemplate<TExcelWorkbook>
+                            , public ITExcelNames
 {
 public:
 	TExcelWorkbook(const TExcelWorkbook&);
@@ -26,6 +25,9 @@ public:
 	TExcelSheet* GetCurrentSheet();
     TExcelSheet* SelectSheet(const String& sheetName);
     TExcelSheet* SelectSheet(unsigned int N);
+
+    TExcelSheet* GetSheet(const String& sheetName);
+    TExcelSheet* GetSheet(unsigned int N);
 
     TExcelTable* CreateTable(
         TDataSet* dataSet, const String& sheetName,
@@ -66,9 +68,13 @@ public:
     );
 
     TExcelWorkbook* Save();
+    TExcelWorkbook* Save(const String filePath = "");
+
+	TExcelNameItem* GetNameItem(const String& itemName);
+	TExcelNameItem* GetNameItem(unsigned int N);
+	TExcelNameItem* AddNamedItem(const String& itemName);
 };
 
-//---------------------------------------------------------------------------
 }
 //---------------------------------------------------------------------------
 #endif
