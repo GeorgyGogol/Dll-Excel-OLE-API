@@ -4,9 +4,9 @@
 #define uTExcelObjectH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "SubClasses/uTExcelObjectData.h"
+#include "uDll.h"
+#include "uTExcelObjectNode.h"
+#include "uTExcelObjectData.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
@@ -21,6 +21,7 @@ public:
 private:
 
 protected:
+	//unsigned int GetSize() const;
 
 public:
 	TExcelObject* GetParent() const;
@@ -32,15 +33,21 @@ public:
 	TExcelObject* Hide();
 	TExcelObject* SetName(const String& newName);
 
+    //TExcelObject* GetNameItem(const String& itemName);
+	//TExcelObject* GetNameItem(unsigned int N);
+
+	//TExcelObject* AddNamedItem(const String& itemName);
+
+
 	// TExcelObject* AddItem(const String& itemName, const Variant& data);
-	void* AddNamedItem(const String& itemName);
-	void* AddNamedItem(const String& itemName, const String& formula);
-	void* AddNamedItem(const String& itemName, const String& formula, const String& comment);
+	// void* AddNamedItem(const String& itemName);
+	// void* AddNamedItem(const String& itemName, const String& formula);
+	// void* AddNamedItem(const String& itemName, const String& formula, const String& comment);
 	
-	void* SetItem(const String& itemName, const String& data);
-	void* SetItem(const String& itemName, const Variant& data);
-	void* SetItem(unsigned int i, const String& data);
-	void* SetItem(unsigned int i, const Variant& data);
+	// void* SetItem(const String& itemName, const String& data);
+	// void* SetItem(const String& itemName, const Variant& data);
+	// void* SetItem(unsigned int i, const String& data);
+	// void* SetItem(unsigned int i, const Variant& data);
 	//TExcelObject* SetItem(const String& itemName, const String& data);
 
 	//TExcelObject* GetItem(unsigned int i);
@@ -52,16 +59,10 @@ public:
 
 };
 
-/* class DLL_EI TExcelName : public TExcelObjectNode, public TExcelObjectData
-{
-public:
-	TExcelName(TExcelObject* pParent, const Variant& data);
-	TExcelName(const TExcelObject& src);
-
-} */
+void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue = "");
+void InsertIntoVarArray(const Variant& vData, Variant& vCell, unsigned int row, unsigned int col, const String& sNullValue = "");
 
 }
 //---------------------------------------------------------------------------
 #endif
-
 

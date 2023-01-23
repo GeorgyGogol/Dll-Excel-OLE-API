@@ -2,8 +2,7 @@
 
 #ifndef uTExcelDataExceptionsH
 #define uTExcelDataExceptionsH
-//---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
+
 //---------------------------------------------------------------------------
 #include "uTExcelExceptions.h"
 //---------------------------------------------------------------------------
@@ -11,9 +10,7 @@
 #define ERROR_EXCEL_CELL_SELECT_DEFINED "Unable to select "
 #define ERROR_EXCEL_CELL_SELECT_UNDEFINED "Unable select"
 //---------------------------------------------------------------------------
-namespace exl {
-//---------------------------------------------------------------------------
-class DLL_EI ExcelDataException : public ExcelException
+class ExcelDataException : public ExcelException
 {
 public:
 	ExcelDataException(const String& message)
@@ -30,7 +27,7 @@ public:
 };
 
 //---------------------------------------------------------------------------
-class DLL_EI ExcelDataNullException : public ExcelDataException
+class ExcelDataNullException : public ExcelDataException
 {
 public:
 	ExcelDataNullException()
@@ -38,7 +35,7 @@ public:
 	{}
 };
 //---------------------------------------------------------------------------
-class DLL_EI ExcelSelectCellException : public ExcelDataException
+class ExcelSelectCellException : public ExcelDataException
 {
 public:
 	ExcelSelectCellException()
@@ -50,7 +47,6 @@ public:
 	{}
 };
 
-}
 //---------------------------------------------------------------------------
 #undef ERROR_EXCEL_DATA_ISNULL
 #undef ERROR_EXCEL_CELL_SELECT

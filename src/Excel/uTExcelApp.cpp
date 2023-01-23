@@ -2,8 +2,11 @@
 #pragma hdrstop
 
 #include "uTExcelApp.h"
-#include "uTExcelWorkbook.h"
-#include "..\Exceptions\uTExcelAppExceptions.h"
+#include "uTExcelAppExceptions.h"
+
+#include <fstream>
+
+//#include "ExcelAPI.h"
 
 //---------------------------------------------------------------------------
 
@@ -11,6 +14,7 @@
 
 //---------------------------------------------------------------------------
 namespace exl {
+//---------------------------------------------------------------------------
 TExcelApp::TExcelApp()
 	: TExcelObjectTemplate<TExcelApp>()
 {
@@ -38,7 +42,22 @@ TExcelApp::TExcelApp(const TExcelApp& src)
 }
 
 TExcelApp::~TExcelApp()
-{}
+{
+	using namespace std;
+
+	ofstream log;
+	log.open("ExcelUseLog.log", ios::app);
+
+	if (log.is_open()) {
+		String dtStamp = Now();
+
+		log<<dtStamp.t_str()<<": ";
+		log<<sizeof(*this)<<" bytes";
+		log<<endl;
+
+		log.close();
+	}
+}
 
 void TExcelApp::Init() {
 	Notifications = true;
@@ -165,6 +184,17 @@ TExcelWorkbook* TExcelApp::GetCurrentWorkbook() {
 	return out;
 }
 
+TExcelWorkbook* TExcelApp::OpenWorkbook(const String& path)
+{
+	if (vData.IsNull()) throw ExcelAppNotAttachedException("CreateWorkbook");
+
+	vData.OlePropertyGet("Workbooks").OleProcedure("Open", System::StringToOleStr(path));
+	seekAndSetDataChild("Workbooks", getChildCountByType("Workbooks"));
+
+	TExcelWorkbook* out = new TExcelWorkbook(this, vDataChild);
+	return out;
+}
 
 }
+
 

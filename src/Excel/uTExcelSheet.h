@@ -4,13 +4,17 @@
 #define uTExcelSheetH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "../Utilities/PivotTable/uTPivotTableCreator.h"
+#include "uTExcelCells.h"
+#include "uTExcelTable.h"
+#include "uTExcelNameItem.h"
+
+#include "uTPivotTableCreator.h"
+
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelSheet : public TExcelObjectRangedTemplate<TExcelSheet> 
+class DLL_EI TExcelSheet : public TExcelObjectRangedTemplate<TExcelSheet>
+						 , public ITExcelNames
 {
 public:
     TExcelSheet(TExcelObject* pParent, const Variant& data);
@@ -49,7 +53,7 @@ public:
 	);
 
 	// Создать таблицу в диапозоне
-	// TExcelTable* CreateTable(unsigned int startColumn, unsigned int startRow);
+	TExcelTable* CreateTable(unsigned int startColumn, unsigned int startRow);
 
 	// Вставка с созданием НАСТОЯЩЕЙ ТАБЛИЦЫ как объекта в координаты
  	TExcelTable* CreateTable(
@@ -128,14 +132,16 @@ public:
 		TPivotSettings* pivotSettings
 	);
 
-	// Найти и вернуть таблицу
 	TExcelTable* GetTable(const String& tableName);
+
+	TExcelNameItem* GetNameItem(const String& itemName);
+	TExcelNameItem* GetNameItem(unsigned int N);
+	TExcelNameItem* AddNamedItem(const String& itemName);
 
     // Место для диаграммм
 };
 
-//---------------------------------------------------------------------------
-}	// end namespace exl
+}
 //---------------------------------------------------------------------------
 #endif
 

@@ -4,16 +4,15 @@
 #define uTExcelCellsH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "Abstract/uTExcelObjectRangedTemplate.h"
+#include "uTExcelObjectRangedTemplate.h"
+//#include "uIFormatManager.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelCells : public TExcelObjectRangedTemplate<TExcelCells>
+class DLL_EI TExcelCells : public TExcelObjectRangedTemplate<TExcelCells>//, public IFormatManager<TExcelCells>
 {
 public:
-    TExcelCells(TExcelObject* pParent, const Variant& data);
+	TExcelCells(TExcelObject* pParent, const Variant& data);
     TExcelCells(TExcelCells&);
     ~TExcelCells();
 
@@ -39,6 +38,7 @@ public:
     Variant ReadValue();
     String ReadValueString();
 
+	// IFormatManager
 	TExcelCells* SetHorizontalAlign(ExcelTextAlign align);
 	TExcelCells* SetVerticalAlign(ExcelTextAlign align);
 
@@ -51,9 +51,7 @@ public:
 	TExcelCells* SetFormat();
 };
 
-
-//---------------------------------------------------------------------------
-}	// end namespace exl
+}
 //---------------------------------------------------------------------------
 #endif
 

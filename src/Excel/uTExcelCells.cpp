@@ -13,13 +13,13 @@
 namespace exl {
 //---------------------------------------------------------------------------
 TExcelCells::TExcelCells(TExcelObject* pParent, const Variant& data) 
-	: TExcelObjectRangedTemplate<TExcelCells>(pParent, data)
+	: TExcelObjectRangedTemplate<TExcelCells>(pParent, data) //, IFormatManager<TExcelCells>()
 {
 	//String AddressString = VarToStr(vData.OlePropertyGet("Address"));
 }
 
 TExcelCells::TExcelCells(TExcelCells& src) 
-	: TExcelObjectRangedTemplate<TExcelCells>(src)
+	: TExcelObjectRangedTemplate<TExcelCells>(src) //, IFormatManager<TExcelCells>()
 {
 }
 
@@ -63,7 +63,7 @@ TExcelCells* TExcelCells::Merge() {
 	}
 
 	Variant vApp = pApp->getVariant(); // Возьмем варианту Экселя
-	bool notifications = vApp.OlePropertyGet("DisplayAlerts"); // Запомним состояние Алертов
+	Variant notifications = vApp.OlePropertyGet("DisplayAlerts"); // Запомним состояние Алертов
 	vApp.OlePropertySet("DisplayAlerts", false);	// Выключим
 
 	// Здесь сделаем наше грязное дело, совсем как в Экселе
@@ -114,14 +114,14 @@ String TExcelCells::ReadValueString() {
 TExcelCells* TExcelCells::SetHorizontalAlign(ExcelTextAlign align)
 {
     checkDataValide();
-    vData.OlePropertySet("HorizontalAlignment", align);
+	vData.OlePropertySet("HorizontalAlignment", (int)align);
     return this;
 }
 
 TExcelCells* TExcelCells::SetVerticalAlign(ExcelTextAlign align)
 {
     checkDataValide();
-    vData.OlePropertySet("VerticalAlignment", align);
+	vData.OlePropertySet("VerticalAlignment", (int)align);
     return this;
 }
 
@@ -161,4 +161,5 @@ TExcelCells* TExcelCells::SetFormat()
 }
 
 }
+
 

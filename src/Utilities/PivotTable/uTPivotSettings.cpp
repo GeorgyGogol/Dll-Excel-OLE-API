@@ -11,6 +11,12 @@
 
 //---------------------------------------------------------------------------
 namespace exl {
+//---------------------------------------------------------------------------
+
+TPivotSettings::TPivotSettings()
+{
+	Clear();
+}
 
 TPivotSettings::TPivotSettings()
 {
@@ -97,4 +103,5 @@ unsigned int TPivotSettings::ColumnCount() const {
 }
 
 }
+
 

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+п»ї//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -12,6 +12,7 @@
 
 //---------------------------------------------------------------------------
 namespace exl {
+//---------------------------------------------------------------------------
 TPivotTableCreator::TPivotTableCreator(TExcelTable* source) 
 {
     ChangeSourceTable(source);
@@ -27,7 +28,7 @@ TExcelTable* TPivotTableCreator::initPivot(
     TPivotSettings* PivotSettings
     )
 {
-	// TODO: Abomal program когда не находит поле
+	// TODO: Abomal program РєРѕРіРґР° РЅРµ РЅР°С…РѕРґРёС‚ РїРѕР»Рµ
 	Variant vPivotTable, vPivotField, vTitle;
 
 	TExcelSheet* sheet = (TExcelSheet*)(aimSheet);
@@ -39,27 +40,27 @@ TExcelTable* TPivotTableCreator::initPivot(
 	Variant vAim = sheet->SelectCells(col, row, col + PivotSettings->ColumnCount(), row + PivotSettings->RowCount())->getVariant();
 
 	vPivotTable = sheet->GetParentVariant().OleFunction(
-		"PivotTableWizard", // Функция, отвечающая за построение
-		XlPivotTableSourceType::xlDatabase, // Тип источника (откуда)
-		SourceTable->getVariant(), // Сам источник
-		vAim, // Куда
-		System::StringToOleStr(PivotSettings->GetPivotName()), // Название
-		PivotSettings->ShowRowTotal,     // Строка итогов по строкам
-		PivotSettings->ShowColumnTotal   // Строка итогов по столбцам
+		"PivotTableWizard", // Р¤СѓРЅРєС†РёСЏ, РѕС‚РІРµС‡Р°СЋС‰Р°СЏ Р·Р° РїРѕСЃС‚СЂРѕРµРЅРёРµ
+		(int)XlPivotTableSourceType::xlDatabase, // РўРёРї РёСЃС‚РѕС‡РЅРёРєР° (РѕС‚РєСѓРґР°)
+		SourceTable->getVariant(), // РЎР°Рј РёСЃС‚РѕС‡РЅРёРє
+		vAim, // РљСѓРґР°
+		System::StringToOleStr(PivotSettings->GetPivotName()), // РќР°Р·РІР°РЅРёРµ
+		PivotSettings->ShowRowTotal,     // РЎС‚СЂРѕРєР° РёС‚РѕРіРѕРІ РїРѕ СЃС‚СЂРѕРєР°Рј
+		PivotSettings->ShowColumnTotal   // РЎС‚СЂРѕРєР° РёС‚РѕРіРѕРІ РїРѕ СЃС‚РѕР»Р±С†Р°Рј
 	);
     
 	for (unsigned int i = 0; i < PivotSettings->Settings.size(); ++i) {
 		TExcelTablePivotField cur = PivotSettings->Settings[i];
 		vPivotField = vPivotTable.OlePropertyGet("PivotFields", System::StringToOleStr(cur.ColumnName));
 
-		vPivotField.OlePropertySet("Orientation", PivotSettings->Settings[i].Type);
+		vPivotField.OlePropertySet("Orientation", (int)PivotSettings->Settings[i].Type);
 		vPivotField.OlePropertySet("Caption", System::StringToOleStr(PivotSettings->Settings[i].Caption));
         
         if (PivotSettings->Settings[i].Type != XlPivotFieldOrientation::xlDataField) {
-		    vPivotField.OlePropertySet("Position", 1);
+			vPivotField.OlePropertySet("Position", 1);
         }
         else {
-            vPivotField.OlePropertySet("Function", PivotSettings->Settings[i].Function);
+            vPivotField.OlePropertySet("Function", (int)PivotSettings->Settings[i].Function);
         }
     }
 
@@ -131,4 +132,5 @@ TExcelTable* TPivotTableCreator::CreateTable(
 }
 
 }
+
 

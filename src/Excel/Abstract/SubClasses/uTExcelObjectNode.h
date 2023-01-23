@@ -4,20 +4,17 @@
 #define uTExcelObjectNodeH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "../../uTExcelEnums.h"
-#include <list>
+#include "uDll.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-class DLL_EI TExcelObjectNode 
+class DLL_EI TExcelObjectNode
 {
 public:
-protected:
     TExcelObjectNode();
     TExcelObjectNode(TExcelObjectNode* pParent);
 	TExcelObjectNode(const TExcelObjectNode& src);
+protected:
 	~TExcelObjectNode();
 
 private:

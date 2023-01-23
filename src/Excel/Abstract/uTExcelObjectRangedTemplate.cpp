@@ -1,11 +1,11 @@
 ﻿//---------------------------------------------------------------------------
 
+#include <cmath>
 
 #pragma hdrstop
 
 #include "uTExcelObjectRangedTemplate.h"
-#include "../../Exceptions/uTExcelDataExceptions.h"
-#include <cmath>
+#include "uTExcelDataExceptions.h"
 
 //---------------------------------------------------------------------------
 
@@ -124,10 +124,11 @@ void TExcelObjectRangedTemplate<T>::checkColRow(unsigned int& col, unsigned int&
 
 template<class T>
 void TExcelObjectRangedTemplate<T>::selectSingle(unsigned int col, unsigned int row) {
-	checkDataValide();
+
+	this->checkDataValide();
 	checkColRow(col, row);
-	seekAndSetDataChild("Range", GetCellString(col, row));
-	vDataChild.OleProcedure("Select");
+	this->seekAndSetDataChild("Range", GetCellString(col, row));
+	this->vDataChild.OleProcedure("Select");
 }
 
 template<class T>
@@ -136,12 +137,12 @@ void TExcelObjectRangedTemplate<T>::selectRange(
 	unsigned int endColumn, unsigned int endRow
 	)
 {
-	checkDataValide();
+	this->checkDataValide();
 	checkColRow(startColumn, startRow);
 	checkColRow(endColumn, endRow);
 	AnsiString range = GetRangeString(startColumn, startRow, endColumn, endRow);
-	seekAndSetDataChild("Range", range);
-	vDataChild.OleProcedure("Select");
+	this->seekAndSetDataChild("Range", range);
+	this->vDataChild.OleProcedure("Select");
 }
 
 // Для каждого - нужон шаблон
@@ -151,6 +152,9 @@ template class TExcelObjectRangedTemplate<TExcelSheet>;
 class DLL_EI TExcelCells;
 template class TExcelObjectRangedTemplate<TExcelCells>;
 
+class DLL_EI TExcelTableColumn;
+template class TExcelObjectRangedTemplate<TExcelTableColumn>;
 
 }
+
 

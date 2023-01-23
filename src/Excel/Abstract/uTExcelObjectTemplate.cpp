@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -66,5 +66,12 @@ template class TExcelObjectTemplate<TExcelCells>;
 class DLL_EI TExcelTable;
 template class TExcelObjectTemplate<TExcelTable>;
 
+class DLL_EI TExcelTableColumn;
+template class TExcelObjectTemplate<TExcelTableColumn>;
+
+class DLL_EI TExcelNameItem;
+template class TExcelObjectTemplate<TExcelNameItem>;
+
 }
+
 

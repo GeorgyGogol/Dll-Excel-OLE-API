@@ -11,7 +11,7 @@
 
 //---------------------------------------------------------------------------
 namespace exl {
-
+//---------------------------------------------------------------------------
 TGridHeaders::TGridHeaders(TDataSet* dataSet)
 	: nVisible(0)
 {
@@ -110,4 +110,5 @@ Variant TGridHeaders::generateVariant() {
 }
 
 }
+
 

@@ -4,9 +4,7 @@
 #define uTPivotSettingsH
 
 //---------------------------------------------------------------------------
-// Copyright (c) 2022-2023 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "../Table/uTTableCreator.h"
+#include "uTTableCreator.h"
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
@@ -33,7 +31,7 @@ public:
 	TPivotSettings(const String& pivotName);
 	~TPivotSettings();
 
-	typedef std::vector<TExcelTablePivotField> DLL_EI tSettingsArray;
+	typedef std::vector<TExcelTablePivotField> tSettingsArray;
 
 private:
 	String PivotName;		// Название таблицы
@@ -60,7 +58,7 @@ public:
 	unsigned int RowCount() const;
 	unsigned int ColumnCount() const;
 };
-//---------------------------------------------------------------------------
+
 }
 //---------------------------------------------------------------------------
 #endif
