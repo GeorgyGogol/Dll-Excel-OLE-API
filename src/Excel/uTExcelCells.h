@@ -42,6 +42,7 @@ public:
 	TExcelCells* SetHorizontalAlign(ExcelTextAlign align);
 	TExcelCells* SetVerticalAlign(ExcelTextAlign align);
 
+	/*
 	TExcelCells* SetBorders();
 
 	TExcelCells* SetWidth();
@@ -49,6 +50,7 @@ public:
 	TExcelCells* AutoSize();
 
 	TExcelCells* SetFormat();
+	*/
 };
 
 }

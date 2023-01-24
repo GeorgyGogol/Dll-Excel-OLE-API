@@ -26,7 +26,9 @@ private:
 
 protected:
 	TExcelObjectNode* getParentNode() const;
-    
+
+	std::list<TExcelObjectNode*>::iterator Begin();
+	std::list<TExcelObjectNode*>::iterator End();
 };
 
 }

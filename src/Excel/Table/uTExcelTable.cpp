@@ -63,7 +63,8 @@ TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, const Vari
 TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, TExcelCells* eTitle)
 	: TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
 {
-	Title = new TExcelCells(this, eTitle->getVariant());
+	//Variant vTitleData = eTitle->getVariant();
+	//Title = new TExcelCells(this, vTitleData);
 }
 
 /*
@@ -137,7 +138,10 @@ TExcelTable* TExcelTable::SetTitle(const String& title) {
     return this;
 }
 
-TExcelCells* TExcelTable::GetHeader(unsigned int N) {
+TExcelCells* TExcelTable::GetHeader(unsigned int N)
+{
+	++N;
+
     vDataChild = vData.OlePropertyGet("HeaderRowRange").OlePropertyGet("Cells", 1, N); //.OlePropertyGet("Cells")
     //vDataChild.OleProcedure("Select");
 

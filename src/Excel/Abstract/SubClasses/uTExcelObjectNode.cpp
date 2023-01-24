@@ -68,6 +68,16 @@ TExcelObjectNode* TExcelObjectNode::getParentNode() const
 	return Parent;
 }
 
+std::list<TExcelObjectNode*>::iterator TExcelObjectNode::Begin()
+{
+	return Childs.begin();
+}
+
+std::list<TExcelObjectNode*>::iterator TExcelObjectNode::End()
+{
+    return Childs.end();
+}
+
 }
 
 
