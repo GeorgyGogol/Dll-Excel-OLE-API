@@ -18,11 +18,6 @@ TPivotSettings::TPivotSettings()
 	Clear();
 }
 
-TPivotSettings::TPivotSettings()
-{
-	Clear();
-}
-
 TPivotSettings::TPivotSettings(const String& pivotName)
 	: PivotName(pivotName)
 {
