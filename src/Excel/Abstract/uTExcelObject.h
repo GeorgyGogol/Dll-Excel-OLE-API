@@ -57,6 +57,8 @@ public:
 
 	//String GetNamedObject();
 
+	unsigned int SizeOfThis();
+
 };
 
 void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue = "");

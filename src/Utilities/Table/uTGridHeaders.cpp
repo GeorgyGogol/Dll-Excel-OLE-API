@@ -98,7 +98,7 @@ TGridHeader* TGridHeaders::GetHeader(unsigned int N) {
 }
 
 Variant TGridHeaders::generateVariant() {
-	Variant varHeaders(OPENARRAY(int, (1, 1, 1, nVisible)), varVariant);
+	Variant varHeaders(OPENARRAY(int, (1, 1, 1, nVisible + 1)), varVariant);
 
 	Begin();
 	for (unsigned int tabCol = 1; !Eof(); NextVisible(), ++tabCol)

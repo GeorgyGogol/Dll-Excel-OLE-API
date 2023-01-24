@@ -1,6 +1,8 @@
 __history/
 build/
 __astcache/
+Release/
+Debug/
 ExcelAPI.ilc
 ExcelAPI.ild
 ExcelAPI.ilf

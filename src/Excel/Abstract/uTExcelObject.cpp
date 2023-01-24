@@ -31,7 +31,7 @@ TExcelObject::~TExcelObject()
 {
 }
 
-TExcelObject* TExcelObject::GetParent() const 
+TExcelObject* TExcelObject::GetParent() const
 {
     return (TExcelObject*)getParentNode();
 }
@@ -142,6 +142,18 @@ String TExcelObject::GetName()
     checkDataValide();
     Variant name = vData.OlePropertyGet("Name");
     return VarToStr(name);
+}
+
+unsigned int TExcelObject::SizeOfThis() {
+	unsigned int s = sizeof(*this);
+
+	std::list<TExcelObjectNode*>::iterator it = Begin();
+
+	for (it; it != End(); ++it) {
+		s += static_cast<TExcelObject*>(*it)->SizeOfThis();
+	}
+
+	return s;
 }
 
 void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue)

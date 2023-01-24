@@ -125,6 +125,7 @@ TExcelCells* TExcelCells::SetVerticalAlign(ExcelTextAlign align)
     return this;
 }
 
+/*
 TExcelCells* TExcelCells::SetBorders()
 {
     checkDataValide();
@@ -159,6 +160,7 @@ TExcelCells* TExcelCells::SetFormat()
     // TODO
     return this;
 }
+*/
 
 }
 

@@ -43,20 +43,41 @@ TExcelApp::TExcelApp(const TExcelApp& src)
 
 TExcelApp::~TExcelApp()
 {
+#ifdef _DEBUG
 	using namespace std;
 
 	ofstream log;
-	log.open("ExcelUseLog.log", ios::app);
 
+	String dtStamp = Now();
+
+	if (!FileExists("ExcelUseLog.log")) {
+		log.open("ExcelUseLog.log", ios::trunc);
+		if (log.is_open()) {
+			log<<"Log start: "<<dtStamp.t_str()<<endl;
+			log<<"Single size: "<<sizeof(TExcelObject)<<" Bytes"<<endl;
+			log<<endl;
+			log.close();
+		}
+	}
+
+	log.open("ExcelUseLog.log", ios::app);
 	if (log.is_open()) {
-		String dtStamp = Now();
+		double size = double(SizeOfThis());
+		String sizeMulty = "B";
+
+		if (size > 1024.0 * 5) {
+			size /= 1024;
+			sizeMulty = "KB";
+		}
 
 		log<<dtStamp.t_str()<<": ";
-		log<<sizeof(*this)<<" bytes";
+		log<<size<<" ";
+		log<<sizeMulty.t_str();
 		log<<endl;
 
 		log.close();
 	}
+#endif
 }
 
 void TExcelApp::Init() {
@@ -130,7 +151,8 @@ void TExcelApp::Free(){
 	vData.OlePropertySet("DisplayAlerts", false);
 	vData.OleProcedure("Quit");
 	vData.OlePropertySet("Interactive", true);
-	delete this;
+	//delete this;
+	this->~TExcelApp();
 }
 
 TExcelApp* TExcelApp::SetExcelNotifications(bool stat){
