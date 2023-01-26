@@ -1,12 +1,6 @@
-//---------------------------------------------------------------------------
-
 #ifndef ExcelAPIH
 #define ExcelAPIH
 
-//---------------------------------------------------------------------------
-// Settings:
-//#define EXCEL_APP_CREATED_ERROR
-//#define EXCEL_SAVE_CELLS_SELECT
 //---------------------------------------------------------------------------
 
 #include "uDependeces.h"
@@ -14,7 +8,6 @@
 extern "C" {
 
 #include "uDll.h"
-//#include "Excel/uTExcelEnums.h"
 #include "Excel/Abstract/SubClasses/uTExcelObjectNode.h"
 #include "Excel/Abstract/SubClasses/uTExcelObjectData.h"
 #include "Excel/Abstract/uTExcelObject.h"
@@ -36,7 +29,6 @@ extern "C" {
 #include "Excel/uTExcelApp.h"
 
 }
-
 
 //---------------------------------------------------------------------------
 #endif

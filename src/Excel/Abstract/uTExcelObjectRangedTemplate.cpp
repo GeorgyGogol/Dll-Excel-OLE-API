@@ -28,6 +28,9 @@ template<class T>
 TExcelObjectRangedTemplate<T>::~TExcelObjectRangedTemplate()
 {}
 
+/// @details Нагло украл у неизвестного программиста. В сути так и не разобрался
+/// @param ACol Номер столбика
+/// @return Буква столбика в мире Excel
 template<class T>
 AnsiString TExcelObjectRangedTemplate<T>::ColToStrA(unsigned int ACol) {
 	// Нагло спизжено

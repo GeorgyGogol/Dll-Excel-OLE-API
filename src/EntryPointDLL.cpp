@@ -1,13 +1,9 @@
 //---------------------------------------------------------------------------
 
-#include <vcl.h>
-#include <windows.h>
-#pragma hdrstop
+#include "EntryPointDLL.h"
 
 //---------------------------------------------------------------------------
 #pragma argsused
-#include "EntryPointDLL.h"
-
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
 	CoInitialize(NULL);

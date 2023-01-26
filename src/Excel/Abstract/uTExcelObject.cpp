@@ -31,11 +31,16 @@ TExcelObject::~TExcelObject()
 {
 }
 
+/// @details По сути идет обращение к защищенному методу и приведение к
+/// текущему классу
+/// @return Указатель на родительский объект (+ приведенный к нужному типу)
 TExcelObject* TExcelObject::GetParent() const
 {
     return (TExcelObject*)getParentNode();
 }
 
+/// @details Берет родителя и если такой есть, обращается к его методу
+/// @return Варианта родителя или Null(), если такого нет
 Variant TExcelObject::GetParentVariant() 
 {
     TExcelObject* dParent = GetParent();
@@ -67,75 +72,6 @@ TExcelObject* TExcelObject::SetName(const String& newName) {
     vData.OlePropertySet("Name", System::StringToOleStr(newName));
     return this;
 }
-/*
-TExcelNameItem* TExcelObject::GetNameItem(const String& itemName)
-{
-    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
-    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
-    return out;
-}
-
-TExcelNameItem* TExcelObject::GetNameItem(unsigned int N)
-{
-    seekAndSetDataChild("Names", N);
-    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
-    return out;
-}
-
-TExcelNameItem* TExcelObject::AddNamedItem(const String& itemName)
-{
-	vDataChild = vData.OlePropertyGet("Names");
-	vDataChild.OleProcedure("Add", System::StringToOleStr(itemName));
-    TExcelNameItem* out = new TExcelNameItem(this, vDataChild);
-	return out;
-}       */
-
-/* String StrToFormul(const String& str){
-    return "=\"" + str + "\"";
-} */
-
-/* void* TExcelObject::AddNamedItem(const String& itemName, const String& formula, const String& comment)
-{
-    checkDataValide();
-    String itemValue = "=\"" + formula + "\"";
-	vDataChild = vData.OlePropertyGet("Names");
-	vDataChild.OleProcedure("Add", System::StringToOleStr(itemName), System::StringToOleStr(itemValue));
-	vDataChild.OlePropertySet("Comment", System::StringToOleStr(comment));
-	//return GetCurrentSelectedChild();
-} */
-
-/* void* TExcelObject::SetItem(const String& itemName, const String& data)
-{
-    checkDataValide();
-    String itemValue = "=\"" + data + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
-    vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
-}
-
-void* TExcelObject::SetItem(const String& itemName, const Variant& data)
-{
-	checkDataValide();
-	String itemValue = "=\"" + VarToStr(data) + "\"";
-	vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
-	vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
-}
-
-void* TExcelObject::SetItem(unsigned int i, const String& data)
-{
-    checkDataValide();
-    String itemValue = "=\"" + data + "\"";
-	vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", int(i));
-    vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
-}
-
-void* TExcelObject::SetItem(unsigned int i, const Variant& data)
-{
-    checkDataValide();
-    String itemValue = "=\"" + VarToStr(data) + "\"";
-    vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", int(i));
-    vDataChild.OlePropertySet("RefersTo", System::StringToOleStr(itemValue));
-} */
-
 
 String TExcelObject::GetName()
 {
@@ -144,6 +80,14 @@ String TExcelObject::GetName()
     return VarToStr(name);
 }
 
+#ifdef ENABLE_USAGE_STATISTIC
+/// @details Метод обращается ко всем своим "дочкам" и спрашивает их размер
+/// В свою очередь дочерние элементы считают размеры своих дочерних и возвращают
+/// ответ инициатору. 
+/// @bug Размеры подсчитываются не самих элементов, а их базового класса. Т.е.
+/// фактический размер может быть чуть больше, если у дочерних классов есть свои,
+/// частные, свойства.
+/// @return Размер занимаемой памяти структурой
 unsigned int TExcelObject::SizeOfThis() {
 	unsigned int s = sizeof(*this);
 
@@ -155,7 +99,13 @@ unsigned int TExcelObject::SizeOfThis() {
 
 	return s;
 }
+#endif
 
+/// @brief Вставка варианты данных в варианту ячейки
+/// @param vData Данные (массив OPENARRAY или строка)
+/// @param vCell Переменная с Ole-объектом
+/// @param sNullValue Значение по умолчанию
+/// @todo Прописать логику и вынести в отдельный объект
 void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue)
 {
 	/*
@@ -179,6 +129,7 @@ void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String&
 	vCell.OlePropertySet("Value", vData);
 }
 
+/// @brief Я вообще хз зачем, см. комментарии к InsertIntoSingleVariant()
 void InsertIntoVarArray(const Variant& vData, Variant& varArr, unsigned int row, unsigned int col, const String& sNullValue)
 {
 	String buf;

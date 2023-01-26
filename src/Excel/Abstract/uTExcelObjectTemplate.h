@@ -1,13 +1,14 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelObjectTemplateH
 #define uTExcelObjectTemplateH
 
-//---------------------------------------------------------------------------
 #include "uTExcelObject.h"
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
+/** @addtogroup Templates
+ * @{
+ * 
+ * @brief Шаблон для не диапозонных элементов
+ */
 template<class T>
 class DLL_EI TExcelObjectTemplate : public TExcelObject
 {
@@ -23,12 +24,13 @@ protected:
 public:
 	T* Show();
 	T* Hide();
+
 	T* SetName(const String& newName);
 
 };
 
 }
 
-//---------------------------------------------------------------------------
+/// @}
 #endif
 
