@@ -7,7 +7,7 @@ namespace exl {
 /** @addtogroup Templates
  * @{
  * 
- * @brief Шаблон для диапозонных элементов
+ * @brief Шаблон для диапазонных элементов
  * 
  * В дополнение к базовым методам содержит функционал для работы с диапазонами
  * ячеек.
@@ -26,8 +26,8 @@ private:
 
 protected:
     AnsiString ColToStrA(unsigned int ACol); ///< Преобразование номера в букву
-    unsigned int GetColFromStr(const String& str); ///< 
-    unsigned int GetRowFromStr(const String& str);
+    unsigned int GetColFromStr(const String& str); ///< Определить Колонку из диапазона
+    unsigned int GetRowFromStr(const String& str); ///< Определить Строку
 
     /// Преобразовать выбор в строку
     AnsiString GetRangeString(unsigned int startColumn, unsigned int startRow, unsigned int endColumn, unsigned int endRow);
@@ -39,7 +39,7 @@ protected:
 
     /// Установить дочернюю варианту на позицию
     void selectSingle(unsigned int col, unsigned int row);
-    /// Установить дочернюю варианту на диапозон
+    /// Установить дочернюю варианту на диапазон
     void selectRange(unsigned int startColumn, unsigned int startRow, unsigned int endColumn, unsigned int endRow);
 
 public:

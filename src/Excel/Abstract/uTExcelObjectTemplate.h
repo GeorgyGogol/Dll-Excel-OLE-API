@@ -7,7 +7,7 @@ namespace exl {
 /** @addtogroup Templates
  * @{
  * 
- * @brief Шаблон для не диапозонных элементов
+ * @brief Шаблон для не диапазонных элементов
  */
 template<class T>
 class DLL_EI TExcelObjectTemplate : public TExcelObject

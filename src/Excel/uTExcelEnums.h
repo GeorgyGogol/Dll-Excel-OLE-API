@@ -24,10 +24,10 @@ enum class ExcelTextAlign : short int {
 /// Направление для заполнения (?)
 /// @details Направление заполнения ячеек как при перетаскивании...
 enum class FillDirection : char {
-	Down = 0, /// Вниз
-	Up, /// Вверх
-	Left, /// Лево
-	Right /// Право
+	Down = 0, 		/// Вниз
+	Up,				/// Вверх
+	Left, 			/// Лево
+	Right 			/// Право
 };
 
 }

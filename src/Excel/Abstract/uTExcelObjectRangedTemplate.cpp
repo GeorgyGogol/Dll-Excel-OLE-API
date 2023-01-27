@@ -113,6 +113,12 @@ AnsiString TExcelObjectRangedTemplate<T>::GetCellString(unsigned int col, unsign
 	return out;
 }
 
+/// @details Проверяет. В зависимости от конфигурации, может сбрасывать исключение или
+/// исправлять 0 на 1.
+/// @param col Номер колонки
+/// @param row Номер строчки
+/// @warning Номерация начинается с 0
+/// @throw ExcelDataException при любом из параметров равного 0
 template<class T>
 void TExcelObjectRangedTemplate<T>::checkColRow(unsigned int& col, unsigned int& row)
 {
@@ -125,6 +131,8 @@ void TExcelObjectRangedTemplate<T>::checkColRow(unsigned int& col, unsigned int&
 #endif
 }
 
+/// @param col Номер колонки
+/// @param row Номер строчки
 template<class T>
 void TExcelObjectRangedTemplate<T>::selectSingle(unsigned int col, unsigned int row) {
 
@@ -134,6 +142,13 @@ void TExcelObjectRangedTemplate<T>::selectSingle(unsigned int col, unsigned int 
 	this->vDataChild.OleProcedure("Select");
 }
 
+/// @brief 
+/// @param startColumn Столбик, с которого выбираем
+/// @param startRow Строка, с которой начинаем
+/// @param endColumn Конечный столбик, по какой отбираем (включительно)
+/// @param endRow Конечная строка, по которую отбираем (включительно)
+/// @warning Номерация начинается с 0
+/// @warning При конечных значениях меньше ячейки все равно отберутся. Ну, вроде должны
 template<class T>
 void TExcelObjectRangedTemplate<T>::selectRange(
 	unsigned int startColumn, unsigned int startRow,

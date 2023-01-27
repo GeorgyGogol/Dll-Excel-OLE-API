@@ -1,39 +1,17 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelTableH
 #define uTExcelTableH
 
-//---------------------------------------------------------------------------
-#include "uDll.h"
-#include "uTExcelCells.h"
+#include "uTExcelTableColumn.h"
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
-class DLL_EI TExcelTableColumn : public TExcelObjectRangedTemplate<TExcelTableColumn>
-                               //, public IFormatManager<TExcelTableColumn>
-{
-public:
-	TExcelTableColumn(TExcelObject* pParent, const Variant& data);
-    TExcelTableColumn(TExcelTableColumn& src);
-    ~TExcelTableColumn();
-
-public:
-	TExcelTableColumn* SetIdentity(int start, int step);
-
-	TExcelTableColumn* SetHorizontalAlign(ExcelTextAlign align);
-	TExcelTableColumn* SetVerticalAlign(ExcelTextAlign align);
-
-	TExcelTableColumn* SetBorders();
-
-	TExcelTableColumn* SetWidth();
-	TExcelTableColumn* SetHeight();
-	TExcelTableColumn* AutoSize();
-
-	TExcelTableColumn* SetFormat();
-
-};
-
-//---------------------------------------------------------------------------
+/** @addtogroup Tables
+ * @{
+ * 
+ * @brief Класс таблицы
+ * 
+ * Предназначен для удобного управления объектом таблицы.,
+ * 
+ */
 class DLL_EI TExcelTable : public TExcelObjectTemplate<TExcelTable>
 {
 public:

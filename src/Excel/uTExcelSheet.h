@@ -1,20 +1,23 @@
-﻿//---------------------------------------------------------------------------
-
-#ifndef uTExcelSheetH
+﻿#ifndef uTExcelSheetH
 #define uTExcelSheetH
 
-//---------------------------------------------------------------------------
 #include "uTExcelCells.h"
 #include "uTExcelTable.h"
 #include "uTExcelNameItem.h"
 
 #include "uTPivotTableCreator.h"
-
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
-class DLL_EI TExcelSheet : public TExcelObjectRangedTemplate<TExcelSheet>
-						 , public ITExcelNames
+/** @addtogroup ExcelClientObjects
+ * @{
+ * @brief Класс Странички
+ * 
+ * Служит для взаимодействия со страницей. Предоставляет самые востребованные 
+ * методы для работы с ними.
+ */
+class DLL_EI TExcelSheet : 
+	public TExcelObjectRangedTemplate<TExcelSheet>,
+	public ITExcelNames
 {
 public:
     TExcelSheet(TExcelObject* pParent, const Variant& data);
@@ -25,14 +28,10 @@ protected:
    	//void CreateTableOnCurrentCells(const String& tableName);	// Создать на текущих ячейках таблицу
 
 public:
-    // Одна ячейка
-	TExcelCells* SelectCell(unsigned int col, unsigned int row);
+	TExcelCells* SelectCell(unsigned int col, unsigned int row); ///< Вернуть одну ячейку
 
-    // Несколько ячеек
-	TExcelCells* SelectCells(
-		unsigned int startColumn, unsigned int startRow,
-		unsigned int endColumn, unsigned int endRow
-    );
+    /// Вернуть несколько ячеек
+	TExcelCells* SelectCells(unsigned int startColumn, unsigned int startRow, unsigned int endColumn, unsigned int endRow);
 
     // Для Колонок
 	TExcelCells* SelectColumn(unsigned int column);
@@ -44,7 +43,7 @@ public:
     //void HideRow(unsigned int row);
     //void SetRowHeight(unsigned int row, double size);
 
-	// Простая вставка таблицы (на самом деле это диапазон с данными)
+	/// @brief Простая вставка таблицы (на самом деле это диапазон с данными)
 	TExcelCells* InsertDataSet(
 		unsigned int startColumn, unsigned int startRow,
 		TDataSet* dataSet, 
@@ -52,7 +51,7 @@ public:
 		bool needDisableSet = false
 	);
 
-	// Создать таблицу в диапозоне
+	// Создать таблицу в диапазоне
 	TExcelTable* CreateTable(unsigned int startColumn, unsigned int startRow);
 
 	// Вставка с созданием НАСТОЯЩЕЙ ТАБЛИЦЫ как объекта в координаты
@@ -142,6 +141,6 @@ public:
 };
 
 }
-//---------------------------------------------------------------------------
+/// @}
 #endif
 
