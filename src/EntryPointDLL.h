@@ -1,12 +1,8 @@
 //---------------------------------------------------------------------------
 
-#ifndef ExcelAPIH
-#define ExcelAPIH
+#ifndef EntryPointDLLH
+#define EntryPointDLLH
 
-//---------------------------------------------------------------------------
-// Settings:
-//#define EXCEL_APP_CREATED_ERROR
-//#define EXCEL_SAVE_CELLS_SELECT
 //---------------------------------------------------------------------------
 
 #include "uDependeces.h"
@@ -38,6 +34,4 @@ extern "C" {
 }
 
 
-//---------------------------------------------------------------------------
 #endif
-
