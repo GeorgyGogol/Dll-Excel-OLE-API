@@ -1,15 +1,11 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelObjectH
 #define uTExcelObjectH
 
-//---------------------------------------------------------------------------
 #include "uDll.h"
 #include "uTExcelObjectNode.h"
 #include "uTExcelObjectData.h"
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
 class DLL_EI TExcelObject : public TExcelObjectNode, public TExcelObjectData
 {
 public:
@@ -23,24 +19,23 @@ private:
 protected:
 
 public:
-	TExcelObject* GetParent() const;
-	Variant GetParentVariant();
+	TExcelObject* GetParent() const; ///< Получить родителя
+	Variant GetParentVariant(); ///< Получить варианту родителя
 
-	TExcelObject* GetCurrentSelectedChild();
+	TExcelObject* GetCurrentSelectedChild(); ///< Какой-то общий метод
 
-	TExcelObject* Show();
-	TExcelObject* Hide();
-	TExcelObject* SetName(const String& newName);
+	TExcelObject* Show(); ///< Скрыть
+	TExcelObject* Hide(); ///< Отобразить
 
-	String GetName();
+	TExcelObject* SetName(const String& newName); ///< Установить имя
+	String GetName(); ///< Получить имя в форме String
 
-#ifdef _DEBUG
-	virtual unsigned int SizeOfThis();
+#ifdef ENABLE_USAGE_STATISTIC
+	unsigned int SizeOfThis(); ///< Получить размер объекта в байтах
 #endif
-
 };
 
 }
-//---------------------------------------------------------------------------
+/// @}
 #endif
 

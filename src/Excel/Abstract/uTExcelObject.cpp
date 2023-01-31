@@ -31,11 +31,16 @@ TExcelObject::~TExcelObject()
 {
 }
 
+/// @details По сути идет обращение к защищенному методу и приведение к
+/// текущему классу
+/// @return Указатель на родительский объект (+ приведенный к нужному типу)
 TExcelObject* TExcelObject::GetParent() const
 {
     return (TExcelObject*)getParentNode();
 }
 
+/// @details Берет родителя и если такой есть, обращается к его методу
+/// @return Варианта родителя или Null(), если такого нет
 Variant TExcelObject::GetParentVariant() 
 {
     TExcelObject* dParent = GetParent();
@@ -75,7 +80,14 @@ String TExcelObject::GetName()
     return VarToStr(name);
 }
 
-#ifdef _DEBUG
+#ifdef ENABLE_USAGE_STATISTIC
+/// @details Метод обращается ко всем своим "дочкам" и спрашивает их размер
+/// В свою очередь дочерние элементы считают размеры своих дочерних и возвращают
+/// ответ инициатору. 
+/// @bug Размеры подсчитываются не самих элементов, а их базового класса. Т.е.
+/// фактический размер может быть чуть больше, если у дочерних классов есть свои,
+/// частные, свойства.
+/// @return Размер занимаемой памяти структурой
 unsigned int TExcelObject::SizeOfThis() {
 	unsigned int s = sizeof(*this);
 

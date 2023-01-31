@@ -1,11 +1,11 @@
-:: Файл подготовки библиотек, чтобы все и сразу
+:: Р¤Р°Р№Р» РїРѕРґРіРѕС‚РѕРІРєРё Р±РёР±Р»РёРѕС‚РµРє, С‡С‚РѕР±С‹ РІСЃРµ Рё СЃСЂР°Р·Сѓ
 
 @echo off
 
-:: Перемещение lib
+:: РџРµСЂРµРјРµС‰РµРЅРёРµ lib
 copy /Y bpi-lib_out\Excel.lib
 
-:: Сжатие dll
+:: РЎР¶Р°С‚РёРµ dll
 if exist upx_32 (
 upx_32 -9 Release-Win32\ExcelAPI.dll
 upx_32 -9t Release-Win32\ExcelAPI.dll
@@ -16,6 +16,5 @@ upx -9t Release-Win32\ExcelAPI.dll
 ) else (
 echo UPX not found! Compress is not done!
 )
-
 
 Pause
