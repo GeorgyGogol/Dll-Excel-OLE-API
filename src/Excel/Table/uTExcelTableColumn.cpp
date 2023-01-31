@@ -28,16 +28,27 @@ TExcelTableColumn* TExcelTableColumn::SetIdentity(int start, int step){
 	return this;
 }
 
-TExcelTableColumn* TExcelTableColumn::SetHorizontalAlign(ExcelTextAlign align) {}
-TExcelTableColumn* TExcelTableColumn::SetVerticalAlign(ExcelTextAlign align) {}
+TExcelTableColumn* TExcelTableColumn::SetHorizontalAlign(ExcelTextAlign align) 
+{
+	checkDataValide();
+	vData.OlePropertySet("HorizontalAlignment", (int)align);
+    return this;
+}
 
-TExcelTableColumn* TExcelTableColumn::SetBorders() {}
+TExcelTableColumn* TExcelTableColumn::SetVerticalAlign(ExcelTextAlign align) 
+{
+	checkDataValide();
+	vData.OlePropertySet("VerticalAlignment", (int)align);
+    return this;
+}
+
+/* TExcelTableColumn* TExcelTableColumn::SetBorders() {}
 
 TExcelTableColumn* TExcelTableColumn::SetWidth() {}
 TExcelTableColumn* TExcelTableColumn::SetHeight() {}
 TExcelTableColumn* TExcelTableColumn::AutoSize() {}
 
-TExcelTableColumn* TExcelTableColumn::SetFormat() {}
+TExcelTableColumn* TExcelTableColumn::SetFormat() {} */
 
 }
 

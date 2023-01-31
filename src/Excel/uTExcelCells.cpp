@@ -13,13 +13,13 @@
 namespace exl {
 //---------------------------------------------------------------------------
 TExcelCells::TExcelCells(TExcelObject* pParent, const Variant& data) 
-	: TExcelObjectRangedTemplate<TExcelCells>(pParent, data) //, IFormatManager<TExcelCells>()
+	: TExcelObjectRangedTemplate<TExcelCells>(pParent, data)
 {
 	//String AddressString = VarToStr(vData.OlePropertyGet("Address"));
 }
 
 TExcelCells::TExcelCells(TExcelCells& src) 
-	: TExcelObjectRangedTemplate<TExcelCells>(src) //, IFormatManager<TExcelCells>()
+	: TExcelObjectRangedTemplate<TExcelCells>(src)
 {
 }
 
