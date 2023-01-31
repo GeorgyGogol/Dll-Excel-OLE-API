@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "uTExcelTable.h"
+#include "uVariantCorrectInserter.h"
 
 //---------------------------------------------------------------------------
 
@@ -11,34 +12,6 @@
 
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
-TExcelTableColumn::TExcelTableColumn(TExcelObject* pParent, const Variant& data)
-	: TExcelObjectRangedTemplate<TExcelTableColumn>(pParent, data)
-	{}
-
-TExcelTableColumn::TExcelTableColumn(TExcelTableColumn& src)
-	: TExcelObjectRangedTemplate<TExcelTableColumn>(src)
-{}
-
-TExcelTableColumn::~TExcelTableColumn() {}
-
-TExcelTableColumn* TExcelTableColumn::SetIdentity(int start, int step){
-	vData.OlePropertyGet("Range").OlePropertySet("FormulaR1C1", "=R[-1]C+1");
-	vData.OlePropertyGet("Range").OlePropertyGet("Item", 2).OlePropertySet("FormulaR1C1", "=1");
-	return this;
-}
-
-TExcelTableColumn* TExcelTableColumn::SetHorizontalAlign(ExcelTextAlign align) {}
-TExcelTableColumn* TExcelTableColumn::SetVerticalAlign(ExcelTextAlign align) {}
-
-TExcelTableColumn* TExcelTableColumn::SetBorders() {}
-
-TExcelTableColumn* TExcelTableColumn::SetWidth() {}
-TExcelTableColumn* TExcelTableColumn::SetHeight() {}
-TExcelTableColumn* TExcelTableColumn::AutoSize() {}
-
-TExcelTableColumn* TExcelTableColumn::SetFormat() {}
-
 //---------------------------------------------------------------------------
 TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName)
     : TExcelObjectTemplate<TExcelTable>(pSheet, Null())
@@ -211,7 +184,7 @@ TExcelTable* TExcelTable::AddRows(TDataSet* src, const Variant& nullValue)
 		for (unsigned int j = 1; j < colCnt + 1; j++) {
 			vElement = src->Fields->Fields[j - 1]->Value;
 
-			InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
+			CorrectInsert::InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
 		}
 		vData.OlePropertyGet("ListRows").OleProcedure("Add");
         vData.OlePropertyGet("ListRows", startPos + rPos).OlePropertyGet("Range").OlePropertySet("Value", vRow);
