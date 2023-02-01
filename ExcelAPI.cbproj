@@ -65,12 +65,12 @@
         <ILINK_LibraryPath>src\Utilities\;src\Excel\Abstract\Interfaces\;preprocess\;export\;src\Excel\Enums\;src\Utilities\Table\;src\Utilities\PivotTable\;src\Excel\Table\;src\Excel\Abstract\SubClasses\;src\Excel\Abstract\;src\Excel\;include\;include\Exceptions\;src\Exceptions\;src\;..\..\..\Projects\PornoHub\Dll-Excel-OLE-API\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BPILibOutputDir>.\lib\$(Config)-$(Platform)\bpi-lib_out</BPILibOutputDir>
         <VerInfo_Locale>1049</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=0.2.1.1;InternalName=;LegalCopyright=Georgy &quot;Gogol&quot;;LegalTrademarks=;OriginalFilename=;ProgramID=Dll-Excel-OLE-API;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=0.2.2.1;InternalName=;LegalCopyright=Georgy &quot;Gogol&quot;;LegalTrademarks=;OriginalFilename=;ProgramID=Dll-Excel-OLE-API;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_Build>1</VerInfo_Build>
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_DLL>true</VerInfo_DLL>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -110,12 +110,11 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <LinkPackageImports>rtl.bpi;vcl.bpi;EhLib280.bpi;xmlrtl.bpi;vclx.bpi;vclimg.bpi;vcldb.bpi;dbrtl.bpi;vclwinx.bpi;bindengine.bpi</LinkPackageImports>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <ILINK_LibraryPath>$(EhLib)\Win32\Debug;$(BDSLIB)\$(PLATFORM)$(CC_SUFFIX)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <IntermediateOutputDir>.\build\$(Config)</IntermediateOutputDir>
         <IncludePath>$(EhLib)\Win32\Debug;$(IncludePath)</IncludePath>
-        <UsePackages>true</UsePackages>
+        <LinkPackageStatics>rtl.lib;vcl.lib;EhLib280.lib;xmlrtl.lib;vclx.lib;vclimg.lib;vcldb.lib;dbrtl.lib;vclwinx.lib;bindengine.lib</LinkPackageStatics>
         <VerInfo_Debug>true</VerInfo_Debug>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
@@ -132,6 +131,9 @@
         <ILINK_LibraryPath>$(EhLib)\Win32\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <LinkPackageStatics>rtl.lib;vcl.lib;EhLib280.lib;xmlrtl.lib;vclx.lib;vclimg.lib;vcldb.lib;dbrtl.lib;vclwinx.lib;bindengine.lib</LinkPackageStatics>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Build>2</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=0.2.1.2;InternalName=;LegalCopyright=Georgy &quot;Gogol&quot;;LegalTrademarks=;OriginalFilename=;ProgramID=Dll-Excel-OLE-API;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Release>1</VerInfo_Release>
     </PropertyGroup>
     <ItemGroup>
         <None Include="export\uDependeces.h">
@@ -140,11 +142,17 @@
         <None Include="include\ExcelAPI.h">
             <BuildOrder>24</BuildOrder>
         </None>
+        <None Include="include\ExcelAPI.h">
+            <BuildOrder>32</BuildOrder>
+        </None>
         <None Include="preprocess\Preprocess_ExcelAPI.h">
             <BuildOrder>25</BuildOrder>
         </None>
         <None Include="preprocess\Preprocess_ExcelAPI_2.h">
             <BuildOrder>27</BuildOrder>
+        </None>
+        <None Include="preprocess\Preprocess_ExcelAPI_3.h">
+            <BuildOrder>33</BuildOrder>
         </None>
         <CppCompile Include="src\EntryPointDLL.cpp">
             <DependentOn>src\EntryPointDLL.h</DependentOn>
@@ -226,6 +234,9 @@
             <DependentOn>src\Exceptions\uTExcelTableCreatorException.h</DependentOn>
             <BuildOrder>3</BuildOrder>
         </CppCompile>
+        <None Include="src\uBuildSettings.h">
+            <BuildOrder>31</BuildOrder>
+        </None>
         <None Include="src\uDll.h">
             <BuildOrder>2</BuildOrder>
         </None>

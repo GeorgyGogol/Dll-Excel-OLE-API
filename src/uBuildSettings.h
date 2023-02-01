@@ -1,4 +1,4 @@
-/** @file 
+﻿/** @file 
  * @brief Файл настроек сборки библиотеки
  * 
  * Ну, тут вроде бы все понятно.
@@ -9,7 +9,7 @@
 #define BUILDSETTINGS_H
 
 /** Включить в сборку логирование и сбор информации об использовании памяти  */
-#define ENABLE_USAGE_STATISTIC 
+#define ENABLE_USAGE_STATISTIC
 
 //#define EXCEL_APP_CREATED_ERROR
 
