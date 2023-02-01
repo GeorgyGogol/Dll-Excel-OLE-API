@@ -13,8 +13,9 @@ namespace exl {
  * Если честно, то хз зачем
  * 
  */
-class DLL_EI TExcelTableColumn : public TExcelObjectRangedTemplate<TExcelTableColumn>
-                               //, public IFormatManager<TExcelTableColumn>
+class DLL_EI TExcelTableColumn 
+	: public TExcelObjectRangedTemplate<TExcelTableColumn>
+	, public IFormatManager<TExcelTableColumn>
 {
 public:
 	TExcelTableColumn(TExcelObject* pParent, const Variant& data);
@@ -27,13 +28,13 @@ public:
 	TExcelTableColumn* SetHorizontalAlign(ExcelTextAlign align);
 	TExcelTableColumn* SetVerticalAlign(ExcelTextAlign align);
 
-	TExcelTableColumn* SetBorders();
+/* 	TExcelTableColumn* SetBorders();
 
 	TExcelTableColumn* SetWidth();
 	TExcelTableColumn* SetHeight();
 	TExcelTableColumn* AutoSize();
 
-	TExcelTableColumn* SetFormat();
+	TExcelTableColumn* SetFormat(); */
 
 };
 

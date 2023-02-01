@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "uTExcelTable.h"
+#include "uVariantCorrectInserter.h"
 
 //---------------------------------------------------------------------------
 
@@ -183,7 +184,7 @@ TExcelTable* TExcelTable::AddRows(TDataSet* src, const Variant& nullValue)
 		for (unsigned int j = 1; j < colCnt + 1; j++) {
 			vElement = src->Fields->Fields[j - 1]->Value;
 
-			InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
+			CorrectInsert::InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
 		}
 		vData.OlePropertyGet("ListRows").OleProcedure("Add");
         vData.OlePropertyGet("ListRows", startPos + rPos).OlePropertyGet("Range").OlePropertySet("Value", vRow);

@@ -1,13 +1,13 @@
-#ifndef ExcelAPIH
-#define ExcelAPIH
+#ifndef EntryPointDLLH
+#define EntryPointDLLH
 
 //---------------------------------------------------------------------------
 
-#include "uDependeces.h"
+#include "uDll.h"
+#include "uIFormatManager.h"
 
 extern "C" {
 
-#include "uDll.h"
 #include "Excel/Abstract/SubClasses/uTExcelObjectNode.h"
 #include "Excel/Abstract/SubClasses/uTExcelObjectData.h"
 #include "Excel/Abstract/uTExcelObject.h"
@@ -32,4 +32,3 @@ extern "C" {
 
 //---------------------------------------------------------------------------
 #endif
-

@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "uTExcelNameItem.h"
+#include "uVariantCorrectInserter.h"
 
 //---------------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ TExcelNameItem* TExcelNameItem::SetValue(const Variant& val)
 	//Variant vbuf;
 
 
-	InsertIntoSingleVariant(val, vData);
+	CorrectInsert::InsertIntoSingleVariant(val, vData);
 	//vData.OlePropertySet("Value", val);
 	return this;
 }

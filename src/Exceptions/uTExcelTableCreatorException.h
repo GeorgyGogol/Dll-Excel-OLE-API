@@ -9,9 +9,7 @@
 class ExcelTableCreatorException : public ExcelException
 {
 public:
-	ExcelTableCreatorException(const String& method, const String& message)
-		: ExcelException("TTableCreator", method, message)
-	{}
+	ExcelTableCreatorException(const String& method, const String& message);
 };
 
 #endif

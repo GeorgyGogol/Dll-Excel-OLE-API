@@ -3,6 +3,10 @@
 #include "EntryPointDLL.h"
 
 //---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+//---------------------------------------------------------------------------
 #pragma argsused
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
@@ -10,5 +14,3 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 	return 1;
 }
 //---------------------------------------------------------------------------
-
-

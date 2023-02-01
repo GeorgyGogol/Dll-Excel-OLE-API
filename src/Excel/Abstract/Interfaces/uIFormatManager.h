@@ -1,10 +1,11 @@
-#ifndef UIFORMATMANAGER_H
+﻿#ifndef UIFORMATMANAGER_H
 #define UIFORMATMANAGER_H
 
+namespace exl {
 /** @addtogroup Interfaces
  * @{
  * 
- * @brief Интерфейс настройки форматирования
+ * @brief Интерфейс для настройки формата ячеек
  * 
  * Отвечает за добавление методов взаимодействия с форматированием ячейки
  * или ячеек.
@@ -12,17 +13,13 @@
  */
 template<class T>
 class IFormatManager {
-protected:
-	IFormatManager<T>() {}
-	virtual ~IFormatManager() = 0;
-
 public:
 	/// @brief Горизонтальное выравнивание текста в ячейке(ах)
 	/// @param align Выравнивание
 	virtual T* SetHorizontalAlign(ExcelTextAlign align) = 0;
 
 	/// @brief Горизонтальное выравнивание текста в ячейке(ах)
-	/// @param align Выравнивание	
+	/// @param align Выравнивание
 	virtual T* SetVerticalAlign(ExcelTextAlign align) = 0;
 		
 	//virtual T* SetBorders() = 0;
@@ -35,6 +32,7 @@ public:
 	//virtual T* SetFormat() = 0;
 };
 
+}
 /// @}
 #endif
 

@@ -54,9 +54,6 @@ public:
 #endif
 };
 
-void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue = "");
-void InsertIntoVarArray(const Variant& vData, Variant& vCell, unsigned int row, unsigned int col, const String& sNullValue = "");
-
 }
 /// @}
 #endif

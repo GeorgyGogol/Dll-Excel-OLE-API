@@ -1,4 +1,4 @@
-#ifndef uTExcelTableH
+﻿#ifndef uTExcelTableH
 #define uTExcelTableH
 
 #include "uTExcelTableColumn.h"
@@ -9,7 +9,7 @@ namespace exl {
  * 
  * @brief Класс таблицы
  * 
- * Предназначен для удобного управления объектом таблицы.,
+ * Предназначен для удобного управления объектом таблицы.
  * 
  */
 class DLL_EI TExcelTable : public TExcelObjectTemplate<TExcelTable>

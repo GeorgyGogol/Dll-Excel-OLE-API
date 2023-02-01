@@ -101,53 +101,6 @@ unsigned int TExcelObject::SizeOfThis() {
 }
 #endif
 
-/// @brief Вставка варианты данных в варианту ячейки
-/// @param vData Данные (массив OPENARRAY или строка)
-/// @param vCell Переменная с Ole-объектом
-/// @param sNullValue Значение по умолчанию
-/// @todo Прописать логику и вынести в отдельный объект
-void InsertIntoSingleVariant(const Variant& vData, Variant& vCell, const String& sNullValue)
-{
-	/*
-	String buf;
-	long double dBuf;
-	TDateTime dtBuf;
-
-	buf = VarToStrDef(vData, sNullValue.c_str());
-
-	if(TryStrToFloat(buf, dBuf)){
-		vCell.OlePropertySet("Value", dBuf);
-	}
-	else if (TryStrToTime(buf, dtBuf)){
-		vCell.OlePropertySet("Value", dtBuf);
-	}
-	else {
-
-	}
-	*/
-
-	vCell.OlePropertySet("Value", vData);
-}
-
-/// @brief Я вообще хз зачем, см. комментарии к InsertIntoSingleVariant()
-void InsertIntoVarArray(const Variant& vData, Variant& varArr, unsigned int row, unsigned int col, const String& sNullValue)
-{
-	String buf;
-	long double dBuf;
-	TDateTime dtBuf;
-
-	buf = VarToStrDef(vData, sNullValue.c_str());
-
-	if(TryStrToFloat(buf, dBuf)){
-		varArr.PutElement(dBuf, row, col);
-	}
-	else if (TryStrToTime(buf, dtBuf)){
-		varArr.PutElement(dtBuf, row, col);
-	}
-	else {
-		varArr.PutElement(buf, row, col);
-	}
-}
 
 }
 
