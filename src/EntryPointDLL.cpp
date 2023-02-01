@@ -1,17 +1,16 @@
 //---------------------------------------------------------------------------
 
-#include <vcl.h>
-#include <windows.h>
-#pragma hdrstop
+#include "EntryPointDLL.h"
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
 
 //---------------------------------------------------------------------------
 #pragma argsused
-#include "..\include\ExcelAPI.h"
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
 	CoInitialize(NULL);
 	return 1;
 }
 //---------------------------------------------------------------------------
-
-

@@ -1,82 +1,50 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelObjectNodeH
 #define uTExcelObjectNodeH
 
-//---------------------------------------------------------------------------
-// Copyright (c) 2022 Georgy 'Gogol' Gogolev
-//---------------------------------------------------------------------------
-#include "Heads/uDll.h"
-#include <list>
+#include "uDll.h"
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
-template<class TNode> class DLL_EI TExcelObjectNode {
+/** @addtogroup Abstract
+ * @{
+ * @brief Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РІС‹СЃС‚СЂР°РёРІР°РЅРёСЏ РёРµСЂР°СЂС…РёРё РїРѕР»СѓС‡Р°РµРјС‹С… РѕР±СЉРµРєС‚РѕРІ
+ * 
+ * РЇРІР»СЏРµС‚СЃСЏ Р°Р±СЃС‚СЂР°РєС‚РЅС‹Рј РїРѕРЅСЏС‚РёРµРј.
+ * 
+ * Р—РѕРЅР° РѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕСЃС‚Рё: СЃРІСЏР·С‹РІР°РЅРёРµ РѕР±СЉРµРєС‚РѕРІ, РІС‹СЃС‚СЂР°РёРІР°РЅРёРµ РёРµСЂР°СЂС…РёРё С‡С‚Рѕ-РіРґРµ 
+ * РЅР°С…РѕРґРёС‚СЃСЏ Рё РєРѕРјСѓ РїСЂРёРЅР°РґР»РµР¶РёС‚. РџСЂРё СЃРѕР·РґР°РЅРёРё СЌР»РµРјРµРЅС‚Р°, РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЌС‚РѕРіРѕ
+ * РєР»Р°СЃСЃР° СЃРѕС…СЂР°РЅСЏРµС‚ СЃСЃС‹Р»РєРё РЅР° СЂРѕРґРёС‚РµР»СЏ (РєСЂРѕРјРµ С…РѕСЃС‚-РїСЂРёР»РѕР¶РµРЅРёСЏ, Сѓ РЅРµРіРѕ РЅРµС‚ 
+ * СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СЌР»РµРјРµРЅС‚Р°), Р° С‚Р°РєР¶Рµ РІСЃРµ СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹Рµ РґРѕС‡РµСЂРЅРёРµ СЌР»РµРјРµРЅС‚С‹.
+ * 
+ * РќРµ РёРјРµРµС‚ РѕС‚РєСЂС‹С‚С‹С… РјРµС‚РѕРґРѕРІ, С‚Р°Рє РєР°Рє СЏРІР»СЏРµС‚СЃСЏ С‡РёСЃС‚Рѕ СЃР»СѓР¶РµР±РЅС‹Рј СЌР»РµРјРµРЅС‚РѕРј.
+ */
+class DLL_EI TExcelObjectNode
+{
 public:
-	TExcelObjectNode::TExcelObjectNode()
-		: Parent(NULL)
-	{
+    TExcelObjectNode();
+    TExcelObjectNode(TExcelObjectNode* pParent);
+	TExcelObjectNode(const TExcelObjectNode& src);
+protected:
+	~TExcelObjectNode();
 
-	}
+private:
+	TExcelObjectNode* Parent; ///< РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЂРѕРґРёС‚РµР»СЏ
+	std::list<TExcelObjectNode*> Childs; ///< РЎРїРёСЃРѕРє РґРѕС‡РµСЂРЅРёС… СЌР»РµРјРµРЅС‚РѕРІ
 
-	TExcelObjectNode::TExcelObjectNode(TExcelObjectNode* pParent)
-		: Parent(pParent)
-	{
-		Parent->AddChildClass(this);
-	}
-
-	TExcelObjectNode::TExcelObjectNode(const TExcelObjectNode& src)
-	{
-		Parent = src.Parent;
-		Parent->AddChildClass(this);
-	}
-
-	TExcelObjectNode::~TExcelObjectNode()
-	{
-		// Финальный шаг удаления всех объектов в иерархии -
-		// уничтожить все свои "дочерние" элементы и вычеркнуть
-		// себя у родителя. Вниз - удаляем всех, вверх - просто
-		// сообщаем, что объекта больше нет.
-		// Основная реализация деструктора полностью ложится
-		// на дочерний класс.
-
-		while (Childs.size() > 0) // Пока есть
-		{
-			// При удалении объект сам себя вычеркнет, т.е.
-			// нам нужон всегда только первый элемент.
-			// Т.о. освобождение памяти происходит рекурсивно.
-			delete *Childs.begin(); // Удоляем
-		}
-
-		if (Parent) { // Если есть родитель -
-			Parent->RemoveChildClass(this); // сообщим ему новость
-			Parent = 0; // забудем про него
-		}
-	}
+	void AddChildClass(TExcelObjectNode* child);
+	void RemoveChildClass(TExcelObjectNode* child);
 
 protected:
-	TExcelObjectNode* Parent;
-    std::list<TExcelObjectNode*> Childs;
+	TExcelObjectNode* getParentNode() const;
 
-
-	void TExcelObjectNode::AddChildClass(TExcelObjectNode* child)
-	{
-		Childs.push_back(child);
-	}
-
-	void TExcelObjectNode::RemoveChildClass(TExcelObjectNode* child)
-	{
-		Childs.remove(child);
-	}
-
-public:
-	TNode* TExcelObjectNode::getParent() const {
-		return (TNode*)Parent;
-	}
-
+#ifdef ENABLE_USAGE_STATISTIC
+	/// @brief РС‚РµСЂР°С‚РѕСЂ РЅР° РїРµСЂРІРѕРіРѕ СЂРµР±РµРЅРєР°
+	std::list<TExcelObjectNode*>::iterator Begin();
+	/// @brief РС‚РµСЂР°С‚РѕСЂ РЅР° РєРѕРЅРµС† РјР°СЃСЃРёРІР° СЃ РґРµС‚СЊРјРё
+	std::list<TExcelObjectNode*>::iterator End(); 
+#endif
 };
-//---------------------------------------------------------------------------
+
 }
-//---------------------------------------------------------------------------
+/// @}
 #endif
 
