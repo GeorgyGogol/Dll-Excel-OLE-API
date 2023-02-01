@@ -1,4 +1,4 @@
-#ifndef uTExcelCellsH
+﻿#ifndef uTExcelCellsH
 #define uTExcelCellsH
 
 #include "uTExcelObjectRangedTemplate.h"

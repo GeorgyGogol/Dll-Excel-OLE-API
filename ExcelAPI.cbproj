@@ -61,8 +61,8 @@
         <ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <SanitizedProjectName>ExcelAPI</SanitizedProjectName>
-        <IncludePath>preprocess\;export\;src\Excel\Enums\;src\Utilities\Table\;src\Utilities\PivotTable\;src\Excel\Table\;src\Excel\Abstract\SubClasses\;src\Excel\Abstract\;src\Excel\;include\;include\Exceptions\;src\Exceptions\;src\;..\..\..\Projects\PornoHub\Dll-Excel-OLE-API\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>preprocess\;export\;src\Excel\Enums\;src\Utilities\Table\;src\Utilities\PivotTable\;src\Excel\Table\;src\Excel\Abstract\SubClasses\;src\Excel\Abstract\;src\Excel\;include\;include\Exceptions\;src\Exceptions\;src\;..\..\..\Projects\PornoHub\Dll-Excel-OLE-API\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>src\Utilities\;src\Excel\Abstract\Interfaces\;preprocess\;export\;src\Excel\Enums\;src\Utilities\Table\;src\Utilities\PivotTable\;src\Excel\Table\;src\Excel\Abstract\SubClasses\;src\Excel\Abstract\;src\Excel\;include\;include\Exceptions\;src\Exceptions\;src\;..\..\..\Projects\PornoHub\Dll-Excel-OLE-API\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>src\Utilities\;src\Excel\Abstract\Interfaces\;preprocess\;export\;src\Excel\Enums\;src\Utilities\Table\;src\Utilities\PivotTable\;src\Excel\Table\;src\Excel\Abstract\SubClasses\;src\Excel\Abstract\;src\Excel\;include\;include\Exceptions\;src\Exceptions\;src\;..\..\..\Projects\PornoHub\Dll-Excel-OLE-API\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BPILibOutputDir>.\lib\$(Config)-$(Platform)\bpi-lib_out</BPILibOutputDir>
         <VerInfo_Locale>1049</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=0.2.1.1;InternalName=;LegalCopyright=Georgy &quot;Gogol&quot;;LegalTrademarks=;OriginalFilename=;ProgramID=Dll-Excel-OLE-API;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -116,6 +116,8 @@
         <IntermediateOutputDir>.\build\$(Config)</IntermediateOutputDir>
         <IncludePath>$(EhLib)\Win32\Debug;$(IncludePath)</IncludePath>
         <UsePackages>true</UsePackages>
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>
@@ -129,6 +131,7 @@
         <IncludePath>$(EhLib)\Win32\Release;$(IncludePath)</IncludePath>
         <ILINK_LibraryPath>$(EhLib)\Win32\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <LinkPackageStatics>rtl.lib;vcl.lib;EhLib280.lib;xmlrtl.lib;vclx.lib;vclimg.lib;vcldb.lib;dbrtl.lib;vclwinx.lib;bindengine.lib</LinkPackageStatics>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
         <None Include="export\uDependeces.h">
@@ -144,60 +147,68 @@
             <BuildOrder>27</BuildOrder>
         </None>
         <CppCompile Include="src\EntryPointDLL.cpp">
-            <BuildOrder>19</BuildOrder>
+            <DependentOn>src\EntryPointDLL.h</DependentOn>
+            <BuildOrder>20</BuildOrder>
         </CppCompile>
-        <None Include="src\EntryPointDLL.h">
-            <BuildOrder>24</BuildOrder>
+        <None Include="src\Excel\Abstract\Interfaces\uIFormatManager.h">
+            <BuildOrder>28</BuildOrder>
         </None>
         <CppCompile Include="src\Excel\Abstract\SubClasses\uTExcelObjectData.cpp">
             <DependentOn>src\Excel\Abstract\SubClasses\uTExcelObjectData.h</DependentOn>
-            <BuildOrder>4</BuildOrder>
+            <BuildOrder>5</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\Abstract\SubClasses\uTExcelObjectNode.cpp">
             <DependentOn>src\Excel\Abstract\SubClasses\uTExcelObjectNode.h</DependentOn>
-            <BuildOrder>5</BuildOrder>
+            <BuildOrder>6</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\Abstract\uTExcelObject.cpp">
             <DependentOn>src\Excel\Abstract\uTExcelObject.h</DependentOn>
-            <BuildOrder>6</BuildOrder>
+            <BuildOrder>7</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\Abstract\uTExcelObjectRangedTemplate.cpp">
             <DependentOn>src\Excel\Abstract\uTExcelObjectRangedTemplate.h</DependentOn>
-            <BuildOrder>7</BuildOrder>
+            <BuildOrder>8</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\Abstract\uTExcelObjectTemplate.cpp">
             <DependentOn>src\Excel\Abstract\uTExcelObjectTemplate.h</DependentOn>
-            <BuildOrder>8</BuildOrder>
+            <BuildOrder>9</BuildOrder>
         </CppCompile>
         <None Include="src\Excel\Enums\uTExcelEnumsPivot.h">
             <BuildOrder>23</BuildOrder>
         </None>
+        <None Include="src\Excel\Table\uICreateTable.h">
+            <BuildOrder>29</BuildOrder>
+        </None>
         <CppCompile Include="src\Excel\Table\uTExcelTable.cpp">
             <DependentOn>src\Excel\Table\uTExcelTable.h</DependentOn>
-            <BuildOrder>14</BuildOrder>
+            <BuildOrder>15</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="src\Excel\Table\uTExcelTableColumn.cpp">
+            <DependentOn>src\Excel\Table\uTExcelTableColumn.h</DependentOn>
+            <BuildOrder>30</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\uTExcelApp.cpp">
             <DependentOn>src\Excel\uTExcelApp.h</DependentOn>
-            <BuildOrder>17</BuildOrder>
+            <BuildOrder>18</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\uTExcelCells.cpp">
             <DependentOn>src\Excel\uTExcelCells.h</DependentOn>
-            <BuildOrder>9</BuildOrder>
+            <BuildOrder>10</BuildOrder>
         </CppCompile>
         <None Include="src\Excel\uTExcelEnums.h">
             <BuildOrder>9</BuildOrder>
         </None>
         <CppCompile Include="src\Excel\uTExcelNameItem.cpp">
             <DependentOn>src\Excel\uTExcelNameItem.h</DependentOn>
-            <BuildOrder>18</BuildOrder>
+            <BuildOrder>19</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\uTExcelSheet.cpp">
             <DependentOn>src\Excel\uTExcelSheet.h</DependentOn>
-            <BuildOrder>15</BuildOrder>
+            <BuildOrder>16</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Excel\uTExcelWorkbook.cpp">
             <DependentOn>src\Excel\uTExcelWorkbook.h</DependentOn>
-            <BuildOrder>16</BuildOrder>
+            <BuildOrder>17</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Exceptions\uTExcelAppExceptions.cpp">
             <DependentOn>src\Exceptions\uTExcelAppExceptions.h</DependentOn>
@@ -220,19 +231,23 @@
         </None>
         <CppCompile Include="src\Utilities\PivotTable\uTPivotSettings.cpp">
             <DependentOn>src\Utilities\PivotTable\uTPivotSettings.h</DependentOn>
-            <BuildOrder>12</BuildOrder>
+            <BuildOrder>13</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Utilities\PivotTable\uTPivotTableCreator.cpp">
             <DependentOn>src\Utilities\PivotTable\uTPivotTableCreator.h</DependentOn>
-            <BuildOrder>13</BuildOrder>
+            <BuildOrder>14</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Utilities\Table\uTGridHeaders.cpp">
             <DependentOn>src\Utilities\Table\uTGridHeaders.h</DependentOn>
-            <BuildOrder>10</BuildOrder>
+            <BuildOrder>11</BuildOrder>
         </CppCompile>
         <CppCompile Include="src\Utilities\Table\uTTableCreator.cpp">
             <DependentOn>src\Utilities\Table\uTTableCreator.h</DependentOn>
-            <BuildOrder>11</BuildOrder>
+            <BuildOrder>12</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="src\Utilities\uVariantCorrectInserter.cpp">
+            <DependentOn>src\Utilities\uVariantCorrectInserter.h</DependentOn>
+            <BuildOrder>4</BuildOrder>
         </CppCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

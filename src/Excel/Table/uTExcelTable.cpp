@@ -72,6 +72,7 @@ TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName, TExcelTa
         , Title(NULL)
 {
 }
+*/
 
 /*
 TExcelTable::TExcelTable(TExcelObjectRanged* Sheet, TExcelCell* cells, unsigned int headersCount)

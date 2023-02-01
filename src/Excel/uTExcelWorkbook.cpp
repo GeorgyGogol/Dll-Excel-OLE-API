@@ -125,6 +125,7 @@ TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, bool needDisableSet)
 TExcelWorkbook* TExcelWorkbook::Save()
 {
 	vData.OleProcedure("Save");
+	return this;
 }
 
 TExcelWorkbook* TExcelWorkbook::Save(const String filePath)
@@ -135,6 +136,7 @@ TExcelWorkbook* TExcelWorkbook::Save(const String filePath)
 	else {
 		vData.OleProcedure("Save");
 	}
+    return this;
 }
 
 TExcelNameItem* TExcelWorkbook::GetNameItem(const String& itemName)
