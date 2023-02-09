@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 // ExcelAPI
 // Copyright (c) 2022 Georgy 'Gogol' Gogolev
-// ver. 0.2.2
+// ver. 0.2.3 (alfa)
 //---------------------------------------------------------------------------
 #include <list>
 #include <vector>
@@ -38,14 +38,36 @@ namespace exl {
 		xlRowField = 1
 	};
 
+	enum class ExcelFormats : char {
+		General, Text, Number, Integer, DateShort, DateLong
+	};
+
 	enum class ExcelTextAlign : short int {
 		xlCenter = -4108, xlBottom = -4107, xlTop = -4160, xlLeft = -4131,
 		xlRight = -4152
 	};
 
+	enum class XlBordersIndex : char {
+		xlDiagonalDown = 5, xlDiagonalUp = 6, xlEdgeBottom = 9, xlEdgeLeft = 7,
+		xlEdgeRight = 10, xlEdgeTop = 8, xlInsideHorizontal = 12,
+		xlInsideVertical = 11
+	};
+
+	enum class XlBorderWeight : short int {
+		xlHairline = 1, xlMedium = -4138, xlThick = 4, xlThin = 2
+	};
+
+	enum class XlLineStyle : short int {
+		xlContinuous = 1, xlDash = -4115, xlDashDot = 4, xlDashDotDot = 5,
+		xlDot = -4118, xlDouble = -4119, xlLineStyleNone = -4142,
+		xlSlantDashDot = 13
+	};
+
 	enum class FillDirection : char {
 		Down = 0, Up, Left, Right
 	};
+
+	const short int xlNone = -4142;
 
 }
 
@@ -55,9 +77,80 @@ namespace exl {
 	class IFormatManager {
 	public:
 
+		virtual IFormatManager<T> * GetFormatInterface() = 0;
+
 		virtual T* SetHorizontalAlign(ExcelTextAlign align) = 0;
 
 		virtual T* SetVerticalAlign(ExcelTextAlign align) = 0;
+
+		virtual T* SetTextWrap(bool state) = 0;
+
+		virtual T* SetFormat(ExcelFormats format) = 0;
+
+		virtual T* SetFormat(const String& format) = 0;
+
+	};
+
+}
+
+namespace exl {
+
+	template<class Ttable, class TdataFrom>
+	class ICreateTable {
+	public:
+
+		virtual Ttable* CreateTable(unsigned int startColumn,
+			unsigned int startRow, TdataFrom* dataSet,
+			const String& tableTitle, const String& tableName) = 0;
+		virtual Ttable* CreateTable(unsigned int startColumn,
+			unsigned int startRow, TdataFrom* dataSet,
+			const String& tableTitle) = 0;
+		virtual Ttable* CreateTable(unsigned int startColumn,
+			unsigned int startRow, TdataFrom* dataSet) = 0;
+
+		__inline Ttable* CreateTable(TdataFrom* dataSet,
+			const String& tableTitle, const String& tableName) {
+			return CreateTable(1, 1, dataSet, tableTitle, tableName);
+		}
+
+		__inline Ttable* CreateTable(TdataFrom* dataSet,
+			const String& tableTitle) {
+			return CreateTable(1, 1, dataSet, tableTitle);
+		}
+
+		__inline Ttable* CreateTable(TdataFrom* dataSet) {
+			return CreateTable(1, 1, dataSet);
+		}
+
+	};
+
+}
+
+namespace exl {
+
+	template<class Ttable>
+	class IGetTable {
+	public:
+
+		virtual Ttable* GetTable(const String& tableName) = 0;
+
+	};
+
+}
+
+namespace exl {
+
+	template<class T>
+	class IBorderManager {
+	public:
+
+		virtual IBorderManager<T> * GetBorderInterface() = 0;
+
+		virtual T* SetBorder(XlBordersIndex border, XlLineStyle style,
+			XlBorderWeight weight) = 0;
+
+		virtual T* RemoveBorder(XlBordersIndex border) = 0;
+
 	};
 
 }
@@ -66,13 +159,14 @@ extern "C" {
 
 	namespace exl {
 		class __declspec(dllexport)TExcelObjectNode {
-		public:
+
+		protected:
 			TExcelObjectNode();
 			TExcelObjectNode(TExcelObjectNode* pParent);
 			TExcelObjectNode(const TExcelObjectNode& src);
-
-		protected:
 			~TExcelObjectNode();
+
+			TExcelObjectNode operator = (const TExcelObjectNode & src);
 
 		private:
 			TExcelObjectNode* Parent;
@@ -85,18 +179,18 @@ extern "C" {
 		protected:
 			TExcelObjectNode* getParentNode()const;
 
+			void ClearChilds();
+
 		};
 
 	}
 
 	namespace exl {
 		class __declspec(dllexport)TExcelObjectData {
-		public:
+		protected:
 			TExcelObjectData();
 			TExcelObjectData(const Variant& data);
 			TExcelObjectData(const TExcelObjectData&);
-
-		protected:
 			~TExcelObjectData();
 
 			Variant vData;
@@ -133,8 +227,6 @@ extern "C" {
 		public:
 			TExcelObject* GetParent()const;
 			Variant GetParentVariant();
-
-			TExcelObject* GetCurrentSelectedChild();
 
 			TExcelObject* Show();
 			TExcelObject* Hide();
@@ -202,6 +294,11 @@ namespace exl {
 		void selectRange(unsigned int startColumn, unsigned int startRow,
 			unsigned int endColumn, unsigned int endRow);
 
+		void setSingle(unsigned int col, unsigned int row);
+
+		void setRange(unsigned int startColumn, unsigned int startRow,
+			unsigned int endColumn, unsigned int endRow);
+
 	public:
 
 	};
@@ -214,25 +311,25 @@ extern "C" {
 
 		class __declspec(dllexport)
 			TExcelCells : public TExcelObjectRangedTemplate<TExcelCells>,
-		public IFormatManager<TExcelCells> {
+		public IFormatManager<TExcelCells>, public IBorderManager<TExcelCells> {
 		public:
 			TExcelCells(TExcelObject* pParent, const Variant& data);
 			TExcelCells(TExcelCells&);
 			~TExcelCells();
 
 		private:
-			unsigned int dColumn, dRow;
 
 		public:
 			unsigned int GetColumnsCount();
 			unsigned int GetRowCount();
 
+			void Delete();
+
 			TExcelCells* GetCell(unsigned int col, unsigned int row);
+
 			TExcelCells* GetCells(unsigned int startColumn,
 				unsigned int startRow, unsigned int endColumn,
 				unsigned int endRow);
-
-			TExcelCells* Merge();
 
 			TExcelCells* Insert(const Variant& data);
 			TExcelCells* InsertString(const String& data);
@@ -241,13 +338,28 @@ extern "C" {
 			Variant ReadValue();
 			String ReadValueString();
 
+			TExcelCells* Merge();
+
+			IFormatManager<TExcelCells> * GetFormatInterface();
 			TExcelCells* SetHorizontalAlign(ExcelTextAlign align);
 			TExcelCells* SetVerticalAlign(ExcelTextAlign align);
+			TExcelCells* SetTextWrap(bool state);
+			TExcelCells* SetFormat(ExcelFormats format);
+			TExcelCells* SetFormat(const String& format);
+
+			IBorderManager<TExcelCells> * GetBorderInterface();
+
+			TExcelCells* SetBorder(XlBordersIndex border, XlLineStyle style,
+				XlBorderWeight weight);
+
+			TExcelCells* RemoveBorder(XlBordersIndex border);
+
 		};
 
 	}
 
 	namespace exl {
+
 		class __declspec(dllexport)
 			TExcelTableColumn : public TExcelObjectRangedTemplate<
 			TExcelTableColumn>, public IFormatManager<TExcelTableColumn> {
@@ -256,31 +368,32 @@ extern "C" {
 			TExcelTableColumn(TExcelTableColumn& src);
 			~TExcelTableColumn();
 
-			TExcelTableColumn* SetIdentity(int start, int step);
-
+			IFormatManager<TExcelTableColumn> * GetFormatInterface();
 			TExcelTableColumn* SetHorizontalAlign(ExcelTextAlign align);
 			TExcelTableColumn* SetVerticalAlign(ExcelTextAlign align);
+			TExcelTableColumn* SetTextWrap(bool state);
+			TExcelTableColumn* SetFormat(ExcelFormats format);
+			TExcelTableColumn* SetFormat(const String& format);
+
 		};
 
 	}
 
 	namespace exl {
-		class __declspec(dllexport)
-			TExcelTable : public TExcelObjectTemplate<TExcelTable> {
-		public:
-			TExcelTable(TExcelObject* pSheet, const String& tableName);
-			TExcelTable(TExcelObject* pSheet, const Variant& vTable);
 
-			TExcelTable(TExcelObject* pSheet, const Variant& vTable,
-				const Variant& vTitle);
+		class __declspec(dllexport)
+			TExcelTable : public TExcelObjectRangedTemplate<TExcelTable> {
+		public:
+			TExcelTable(TExcelObject* pSheet, const Variant& vTable);
 			TExcelTable(TExcelObject* pSheet, const Variant& vTable,
 				TExcelCells* eTitile);
-
 			~TExcelTable();
 
 		private:
-
 			TExcelCells* Title;
+
+			const unsigned int decideOneStepRows(const unsigned int& nColumns)
+				const;
 
 		public:
 			String GetTitle();
@@ -290,7 +403,6 @@ extern "C" {
 			TExcelCells* GetHeaders();
 
 			TExcelTableColumn* GetColumn(unsigned int N);
-
 			unsigned int ColumnsCount();
 
 			TExcelCells* GetField(unsigned int col, unsigned int row);
@@ -298,8 +410,13 @@ extern "C" {
 			unsigned int RowsCount();
 
 			TExcelTable* AddRow();
+			TExcelTable* AddRow(unsigned int pos);
+			TExcelTable* AddRows(unsigned int cnt);
+			TExcelTable* AddRows(unsigned int from, unsigned int cnt);
+
 			TExcelTable* AddRows(TDataSet* src,
 				const Variant& nullValue = Null());
+
 			TExcelTable* DeleteRow(unsigned int row);
 
 		};
@@ -349,10 +466,9 @@ extern "C" {
 	}
 
 	namespace exl {
-
 		class __declspec(dllexport)TTableCreator {
 		public:
-			TTableCreator();
+
 			TTableCreator(TExcelObject* pSheet, TDataSet* dataSet,
 				const String& tableTitle, const String& tableName);
 			TTableCreator(TExcelObject* pSheet, TDataSet* dataSet,
@@ -483,6 +599,21 @@ extern "C" {
 
 	namespace exl {
 
+		class ACreateTableController : public ICreateTable<TExcelTable,
+		TDataSet>, public ICreateTable<TExcelTable, TDBGridEh> {
+		protected:
+			ACreateTableController();
+
+			bool NeedDisableDataSet;
+
+		public:
+			void setNeedDisableDataSet(bool isNeedDisable);
+
+		};
+
+	}
+
+	namespace exl {
 		class __declspec(dllexport)
 			TExcelNameItem : public TExcelObjectTemplate<TExcelNameItem> {
 		private:
@@ -513,87 +644,49 @@ extern "C" {
 
 		class __declspec(dllexport)
 			TExcelSheet : public TExcelObjectRangedTemplate<TExcelSheet>,
-		public ITExcelNames {
+		public ACreateTableController, public ITExcelNames,
+		public IGetTable<TExcelTable> {
 		public:
 			TExcelSheet(TExcelObject* pParent, const Variant& data);
 			TExcelSheet(const TExcelSheet&);
 			~TExcelSheet();
 
-		protected:
-
-		public:
+			TExcelCells* GetCell(unsigned int col, unsigned int row);
+			TExcelCells* GetCell(unsigned int startColumn,
+				unsigned int startRow, unsigned int endColumn,
+				unsigned int endRow);
 			TExcelCells* SelectCell(unsigned int col, unsigned int row);
-
 			TExcelCells* SelectCells(unsigned int startColumn,
 				unsigned int startRow, unsigned int endColumn,
 				unsigned int endRow);
-
 			TExcelCells* SelectColumn(unsigned int column);
-
+			TExcelCells* SelectColumns(unsigned int colStart,
+				unsigned int colEnd);
 			TExcelCells* SelectRow(unsigned int row);
-
+			TExcelCells* SelectRows(unsigned int rowStart, unsigned int rowEnd);
 			TExcelCells* InsertDataSet(unsigned int startColumn,
 				unsigned int startRow, TDataSet* dataSet,
-				bool needInsertFieldNames = false,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(unsigned int startColumn,
-				unsigned int startRow);
-
+				bool needInsertFieldNames = false);
 			TExcelTable* CreateTable(unsigned int startColumn,
 				unsigned int startRow, TDataSet* dataSet,
-				const String& tableTitle, const String& tableName,
-				bool needDisableSet = false);
-
+				const String& tableTitle, const String& tableName);
 			TExcelTable* CreateTable(unsigned int startColumn,
 				unsigned int startRow, TDataSet* dataSet,
-				const String& tableTitle, bool needDisableSet = false);
-
+				const String& tableTitle);
 			TExcelTable* CreateTable(unsigned int startColumn,
-				unsigned int startRow, TDataSet* dataSet,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				const String& tableTitle, const String& tableName,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				const String& tableTitle,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				bool needDisableSet = false);
-
+				unsigned int startRow, TDataSet* dataSet);
 			TExcelTable* CreateTable(unsigned int startColumn,
 				unsigned int startRow, TDBGridEh* gridEh,
-				const String& tableTitle, const String& tableName,
-				bool needDisableSet = false);
-
+				const String& tableTitle, const String& tableName);
 			TExcelTable* CreateTable(unsigned int startColumn,
 				unsigned int startRow, TDBGridEh* gridEh,
-				const String& tableTitle, bool needDisableSet = false);
-
+				const String& tableTitle);
 			TExcelTable* CreateTable(unsigned int startColumn,
-				unsigned int startRow, TDBGridEh* gridEh,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				const String& tableTitle, const String& tableName,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				const String& tableTitle,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				bool needDisableSet = false);
-
+				unsigned int startRow, TDBGridEh* gridEh);
+			TExcelTable* GetTable(const String& tableName);
 			TExcelTable* CreatePivotTable(unsigned int startColumn,
 				unsigned int startRow, TExcelTable* srcTable,
 				TPivotSettings* pivotSettings);
-
-			TExcelTable* GetTable(const String& tableName);
-
 			TExcelNameItem* GetNameItem(const String& itemName);
 			TExcelNameItem* GetNameItem(unsigned int N);
 			TExcelNameItem* AddNamedItem(const String& itemName);
@@ -603,13 +696,12 @@ extern "C" {
 	}
 
 	namespace exl {
-
 		class __declspec(dllexport)
 			TExcelWorkbook : public TExcelObjectTemplate<TExcelWorkbook>,
 		public ITExcelNames {
 		public:
-			TExcelWorkbook(const TExcelWorkbook&);
 			TExcelWorkbook(TExcelObject* pParent, const Variant& data);
+			TExcelWorkbook(const TExcelWorkbook&);
 			~TExcelWorkbook();
 
 			unsigned int SheetCount();
@@ -618,31 +710,8 @@ extern "C" {
 			TExcelSheet* GetCurrentSheet();
 			TExcelSheet* SelectSheet(const String& sheetName);
 			TExcelSheet* SelectSheet(unsigned int N);
-
 			TExcelSheet* GetSheet(const String& sheetName);
 			TExcelSheet* GetSheet(unsigned int N);
-
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				const String& sheetName, const String& tableTitle,
-				const String& tableName, bool needDisableSet = false);
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				const String& sheetName, const String& tableTitle,
-				bool needDisableSet = false);
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				const String& sheetName, bool needDisableSet = false);
-			TExcelTable* CreateTable(TDataSet* dataSet,
-				bool needDisableSet = false);
-
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				const String& sheetName, const String& tableTitle,
-				const String& tableName, bool needDisableSet = false);
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				const String& sheetName, const String& tableTitle,
-				bool needDisableSet = false);
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				const String& sheetName, bool needDisableSet = false);
-			TExcelTable* CreateTable(TDBGridEh* gridEh,
-				bool needDisableSet = false);
 
 			TExcelWorkbook* Save();
 			TExcelWorkbook* Save(const String filePath = "");
@@ -660,12 +729,11 @@ extern "C" {
 			TExcelApp : public TExcelObjectTemplate<TExcelApp> {
 		public:
 			TExcelApp();
+			TExcelApp(const TExcelApp& src);
+			~TExcelApp();
 
 			TExcelApp(bool visible);
 			TExcelApp(bool visible, unsigned int nSheetsInNewWorkbook);
-
-			TExcelApp(const TExcelApp& src);
-			~TExcelApp();
 
 		private:
 			bool Notifications;
@@ -693,8 +761,8 @@ extern "C" {
 			TExcelWorkbook* CreateWorkbook();
 			TExcelWorkbook* CreateWorkbook(const String& workbookName);
 			TExcelWorkbook* GetCurrentWorkbook();
-
 			TExcelWorkbook* OpenWorkbook(const String& path);
+
 		};
 
 	}

@@ -13,11 +13,11 @@
 namespace exl {
 //---------------------------------------------------------------------------
 
-/// @details Ð”Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€Ð° Ð½Ð°Ð¼ Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼ ÐºÐ»Ð°ÑÑ
-/// @param src 
+/// @details Äëÿ ñîçäàíèÿ ýêçåìïëÿðà íàì ïðîñòî íåîáõîäèì êëàññ
+/// @param src
 ExcelCellFont::ExcelCellFont(TExcelObject* src)
 {
-    // TODO: ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° ÑÑƒÑ‰ÐµÑÑ‚Ð²Ð¾Ð²Ð°Ð½Ð¸Ðµ
+    // TODO: Ïðîâåðêà íà ñóùåñòâîâàíèå
     pVarCell = &(src->GetVariant());
 }
 
@@ -36,7 +36,7 @@ ExcelCellFont ExcelCellFont::setItalic(bool isItalic)
     pVarCell->OlePropertySet("Italic", isItalic);
 }
 
-/* 
+/*
 ExcelCellFont ExcelCellFont::setFontSize(unsigned int points)
 {
 
@@ -48,22 +48,22 @@ ExcelCellFont ExcelCellFont::setFontName(const String& name)
 }
  */
 
-/// @param points ÐŸÑƒÐ½ÐºÑ‚Ñ‹ ÑˆÐ¸Ñ€Ð¸Ð½Ñ‹
+/// @param points Ïóíêòû øèðèíû
 ExcelCellFont ExcelCellFont::setRowHeight(unsigned int points)
 {
     pVarCell->OlePropertySet("RowHeight", points);
 }
 
-/// @details ÐœÐµÑ‚Ð¾Ð´ Ð¿Ð¾Ð·Ð²Ð¾Ð»ÑÐµÑ‚ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²Ñ‹ÑÐ¾Ñ‚Ñƒ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð±ÐµÐ· Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ð¹, ÑÐºÐ¾Ð»ÑŒÐºÐ¾
-/// Ð¿ÑƒÐ½ÐºÑ‚Ð¾Ð² Ð´Ð»Ñ ÑÑ‚Ð¾Ð³Ð¾ Ð½ÑƒÐ¶Ð½Ð¾.
-/// @param lines ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÑ‚Ñ€Ð¾Ðº
-/// @todo Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð° ÑˆÑ€Ð¸Ñ„Ñ‚Ð°
+/// @details Ìåòîä ïîçâîëÿåò óñòàíîâèòü âûñîòó ñòðîêè áåç âû÷èñëåíèé, ñêîëüêî
+/// ïóíêòîâ äëÿ ýòîãî íóæíî.
+/// @param lines Êîëè÷åñòâî ñòðîê
+/// @todo Âû÷èñëåíèå ðàçìåðà øðèôòà
 ExcelCellFont ExcelCellFont::setRowHeightInTextLines(unsigned int lines)
 {
     pVarCell->OlePropertySet("RowHeight", lines * 15);
 }
 
-/* 
+/*
 ExcelCellFont ExcelCellFont::setColumnWidth(unsigned int points)
 {
 
@@ -77,4 +77,3 @@ ExcelCellFont ExcelCellFont::ColumnAutoFit()
 
 
 }
-
