@@ -118,28 +118,19 @@ AnsiString TExcelObjectRangedTemplate<T>::GetCellString(unsigned int col, unsign
 /// @param col Номер колонки
 /// @param row Номер строчки
 /// @warning Номерация начинается с 0
-/// @throw ExcelDataException при любом из параметров равного 0
 template<class T>
 void TExcelObjectRangedTemplate<T>::checkColRow(unsigned int& col, unsigned int& row)
 {
-#ifdef EXCEL_SAVE_CELLS_SELECT
 	if (col < 1) col = 1;
 	if (row < 1) row = 1;
-#else
-	if (col < 1) throw ExcelDataException("Requested Column is less that 1");
-	if (row < 1) throw ExcelDataException("Requested Row is less than 1");
-#endif
 }
 
 /// @param col Номер колонки
 /// @param row Номер строчки
 template<class T>
 void TExcelObjectRangedTemplate<T>::selectSingle(unsigned int col, unsigned int row) {
-
-	this->checkDataValide();
-	checkColRow(col, row);
-	this->seekAndSetDataChild("Range", GetCellString(col, row));
-	this->vDataChild.OleProcedure("Select");
+	setSingle(col, row);
+	vDataChild.OleProcedure("Select");
 }
 
 /// @brief 
@@ -155,12 +146,29 @@ void TExcelObjectRangedTemplate<T>::selectRange(
 	unsigned int endColumn, unsigned int endRow
 	)
 {
-	this->checkDataValide();
+	setRange(startColumn, startRow, endColumn, endRow);
+	vDataChild.OleProcedure("Select");
+}
+
+template<class T>
+void TExcelObjectRangedTemplate<T>::setSingle(unsigned int col, unsigned int row) {
+
+	checkDataValide();
+	checkColRow(col, row);
+	seekAndSetDataChild("Range", GetCellString(col, row));
+}
+
+template<class T>
+void TExcelObjectRangedTemplate<T>::setRange(
+	unsigned int startColumn, unsigned int startRow,
+	unsigned int endColumn, unsigned int endRow
+	)
+{
+	checkDataValide();
 	checkColRow(startColumn, startRow);
 	checkColRow(endColumn, endRow);
 	AnsiString range = GetRangeString(startColumn, startRow, endColumn, endRow);
-	this->seekAndSetDataChild("Range", range);
-	this->vDataChild.OleProcedure("Select");
+	seekAndSetDataChild("Range", range);
 }
 
 // Для каждого - нужон шаблон
@@ -172,6 +180,9 @@ template class TExcelObjectRangedTemplate<TExcelCells>;
 
 class DLL_EI TExcelTableColumn;
 template class TExcelObjectRangedTemplate<TExcelTableColumn>;
+
+class DLL_EI TExcelTable;
+template class TExcelObjectRangedTemplate<TExcelTable>;
 
 }
 

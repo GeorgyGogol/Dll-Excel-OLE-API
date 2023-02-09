@@ -1,6 +1,11 @@
+#ifndef TLOG_H
+#define TLOG_H
+
 //---------------------------------------------------------------------------
 
-#ifndef uICreateTableH
-#define uICreateTableH
+#include "uLogCallReasons.h"
+#include "uTLog.h"
+
 //---------------------------------------------------------------------------
-#endif
+#endif // TLOG_H
+

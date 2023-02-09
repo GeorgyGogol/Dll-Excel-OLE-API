@@ -4,7 +4,12 @@
 #pragma hdrstop
 
 #include "uTExcelTable.h"
-#include "uVariantCorrectInserter.h"
+#include "uFunctions.h"
+#include "uCheckers.h"
+
+#include "Log.h"
+
+#define MBYTES_TO_BYTES(mb) mb * 1024 * 1024
 
 //---------------------------------------------------------------------------
 
@@ -13,92 +18,33 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName)
-    : TExcelObjectTemplate<TExcelTable>(pSheet, Null())
-{
-    Variant vParent = GetParentVariant();
-    vData = vParent.OlePropertyGet("ListObjects").OlePropertyGet("Item", System::StringToOleStr(tableName));
-}
-
-
 TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable)
-    : TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
+	: TExcelObjectRangedTemplate<TExcelTable>(pSheet, vTable)
 {
 }
-
-TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, const Variant& vTitle)
-    : TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
-{
-    Title = new TExcelCells(this, vTitle);
-}
-
 
 TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, TExcelCells* eTitle)
-	: TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
+	: TExcelObjectRangedTemplate<TExcelTable>(pSheet, vTable)
 {
-	//Variant vTitleData = eTitle->getVariant();
-	//Title = new TExcelCells(this, vTitleData);
+	if (eTitle) {
+		Title = new TExcelCells(this, eTitle->getVariant());
+	}
 }
 
-/*
-TExcelTable::TExcelTable(TExcelObjectRanged* Sheet, const Variant& name, const Variant& headers, const Variant& data)
-	: TExcelObjectRanged(*Sheet)
+TExcelTable::~TExcelTable() 
 {
-	NameCells = new TExcelCell(Sheet, name);
-	Headers = new TExcelTableHeaders(Sheet, headers);
-	Data = new TExcelTableData(Sheet, data);
+    /// Так как Title - дочерний элемент, удалится сам.
 }
-*/
 
-/*
-TExcelTable::TExcelTable(TExcelObject* pSheet, const Variant& vTable, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data, TExcelCells* titleCells)
-	: TExcelObjectTemplate<TExcelTable>(pSheet, vTable)
-		//, Headers(headers), Data(data)
-        , Title(titleCells)
+const unsigned int TExcelTable::decideOneStepRows(const unsigned int& nCols) const
 {
+	// Кол-во памяти / размер объекта (= кол-во записей) / кол-во колонок
+	return MBYTES_TO_BYTES(32) / sizeof(Variant) / nCols;
+	// Кол-во записей / кол-во колонок
+	//return 500000 / src->FieldCount; /* (500к ~ 351 КБ) */
 }
 
-TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data, TExcelCells* titleCells)
-	: TExcelObjectTemplate<TExcelTable>(pSheet, Null())
-		//, Headers(headers), Data(data)
-        , Title(titleCells)
-{
-    //vData = 
-}
-
-TExcelTable::TExcelTable(TExcelObject* pSheet, const String& tableName, TExcelTableHeaders* headers, TExcelCells* data)
-	: TExcelObjectTemplate<TExcelTable>(pSheet, Null())
-        //, Headers(headers), Data(data)
-        , Title(NULL)
-{
-}
-*/
-
-/*
-TExcelTable::TExcelTable(TExcelObjectRanged* Sheet, TExcelCell* cells, unsigned int headersCount)
-    : TExcelObjectRanged(*Sheet)
-{
-    if (headersCount == 0) headersCount = 1;
-    unsigned int columns = cells->GetColumnsCount();
-    Variant vHeaders = cells->GetCellsFromCells(1, 1, columns, headersCount)->getVariant();
-    Variant vData = cells->GetCellsFromCells(1, headersCount + 1, columns, cells->GetRowCount() - headersCount)->getVariant();
-
-    Headers = new TExcelTableHeaders(Sheet, vHeaders);
-    Data = new TExcelTableData(Sheet, vData);
-}
-*/
-
-TExcelTable::~TExcelTable() {
-    // Это не нужно, т.к. дуструктор табицы дергает деструкторы дочерних элементов.
-    // Да, Title - это дочерний. Если есть.
-    /*
-    if (Title) {
-	    delete Title;
-        Title = NULL;
-    }
-    */
-}
-
+/// @return Содержимое ячейки (объединенных ячеек)
 String TExcelTable::GetTitle()
 {
 	if (!Title) return "";
@@ -106,23 +52,26 @@ String TExcelTable::GetTitle()
     return out;
 }
 
+/// @details Установить заголовок таблицы, если есть
+/// @param title Содержимое заголовка
 TExcelTable* TExcelTable::SetTitle(const String& title) {
     if (!Title) return 0;
     Title->InsertString(title);
     return this;
 }
 
+/// @param N Номер заголовка от 0 до N-1 включительно
+/// @note Отсчет идет по-программистки, с 0, а не по-людски.
+/// @return Ячейка заголовка
 TExcelCells* TExcelTable::GetHeader(unsigned int N)
 {
-	++N;
-
-    vDataChild = vData.OlePropertyGet("HeaderRowRange").OlePropertyGet("Cells", 1, N); //.OlePropertyGet("Cells")
-    //vDataChild.OleProcedure("Select");
-
+    /// Обратится к заголовку колонки - свойству HeaderRowRange, свойству Cells, ячейке (1, N)
+    vDataChild = vData.OlePropertyGet("HeaderRowRange").OlePropertyGet("Cells", 1, N + 1);
     TExcelCells* out = new TExcelCells(this, vDataChild);
 	return out;
 }
 
+/// @return Ячейки заголовков таблиц
 TExcelCells* TExcelTable::GetHeaders() {
     vDataChild = vData.OlePropertyGet("HeaderRowRange");
 
@@ -130,10 +79,12 @@ TExcelCells* TExcelTable::GetHeaders() {
 	return out;
 }
 
+/// @param N Номер столбика-колонки
+/// @return Экземпляр класса колонки со всеми ячейками (заголовки не включены)
 TExcelTableColumn* TExcelTable::GetColumn(unsigned int N)
 {
+    /// Для этого идет обращение к свойству ListColumns
     vDataChild = vData.OlePropertyGet("ListColumns", N + 1);
-
     TExcelTableColumn* out = new TExcelTableColumn(this, vDataChild);
     return out;
 }
@@ -143,10 +94,19 @@ unsigned int TExcelTable::ColumnsCount()
     return getChildCountByType("ListColumns");
 }
 
+/// @param col Столбец/Колонка
+/// @param row Номер записи/строчик
+/// @return Ячейку
 TExcelCells* TExcelTable::GetField(unsigned int col, unsigned int row)
 {
+    /// @note Отсчет идет по-программистки, с 0, а не по-людски. Есть
+    /// поправка на +1.
 	col++;
 	row++;
+
+    /// Для этого обратимся к свойству ListRows, получим ListRow. Обратимся к его
+    /// свойству Range, потом уже свойству Item (1, col). 1 - потому что это количество
+    /// строк, на сколько понял.
 	vDataChild = vData.OlePropertyGet("ListRows", row).OlePropertyGet("Range").OlePropertyGet("Item", 1, col);
     TExcelCells* out = new TExcelCells(this, vDataChild);
     return out;
@@ -160,42 +120,117 @@ unsigned int TExcelTable::RowsCount()
 TExcelTable* TExcelTable::AddRow()
 {
     //if (pAddRow) pAddRow();
-    vData.OlePropertyGet("ListRows").OleProcedure("Add");
-    return this;
+	/// У свойства ListRows дергается процедура (метод) Add, который добавляет
+    /// строку снизу таблицы.
+	/// @note При добавлении строки добавляются новые строчки в таблицу, лист
+	/// "расширяется" вниз
+	vDataChild = vData.OlePropertyGet("ListRows").OleFunction("Add").OlePropertyGet("Range");
+	return this;
+}
+
+TExcelTable* TExcelTable::AddRow(unsigned int pos)
+{
+	checkers::checkNumber(pos);
+	vDataChild = vData.OlePropertyGet("ListRows").OleFunction("Add", pos).OlePropertyGet("Range");
+	return this;
+}
+
+TExcelTable* TExcelTable::AddRows(unsigned int from, unsigned int cnt)
+{
+	checkers::checkNumber(from);
+	if (!checkers::checkNumber(cnt)) throw "Cannot add less than 1 row";
+
+	String StartRowString = vData.OlePropertyGet("ListRows", from).OlePropertyGet("Range").OlePropertyGet("Address");
+	String end = StartRowString.SubString(StartRowString.Pos(":") + 1, StartRowString.Length() - StartRowString.Pos(":"));
+	unsigned int endColumn = GetColFromStr(end);
+
+	String sRange = StartRowString.SubString(1, StartRowString.Pos(":")) + GetCellString(endColumn, from + cnt);
+
+	vDataChild = GetParentVariant().OlePropertyGet("Range", System::StringToOleStr(sRange));
+	vDataChild.OleProcedure("Insert", -4121);
+	vDataChild = GetParentVariant().OlePropertyGet("Range", System::StringToOleStr(sRange));
+	return this;
+}
+
+TExcelTable* TExcelTable::AddRows(unsigned int cnt)
+{
+	int Last = getChildCountByType("ListRows");
+	return AddRows(Last, cnt);
 }
 
 TExcelTable* TExcelTable::AddRows(TDataSet* src, const Variant& nullValue)
 {
+	TLog log("TExcelTable::AddRows");
+	const unsigned int RealSourceRowCount = src->RecordCount;
 	unsigned int colCnt = src->FieldCount;
-	unsigned int rowCnt = src->RecordCount;
-	unsigned int startPos = getChildCountByType("ListRows");
 
-	if (colCnt != ColumnsCount()) throw Exception("TExcelTable::AddRows: colCnt != ColumnsCount");
+	if (colCnt < getChildCountByType("ListColumns")) {
+		log.WriteLog("Table have more Columns, what Source. Extra Columns will be truncated", CallLogReason::Warning);
+	}
+	else if (colCnt > getChildCountByType("ListColumns")) {
+		colCnt = getChildCountByType("ListColumns");
+		log.WriteLog("Table have less Columns, what Source. Extra Columns will be truncated", CallLogReason::Warning);
+	}
+
+	const unsigned int OneStepReadRows = decideOneStepRows(colCnt);
+	unsigned int nSteps = static_cast<unsigned int>(RealSourceRowCount / OneStepReadRows);
+
+	if (nSteps * OneStepReadRows < RealSourceRowCount) {
+		++nSteps;
+	}
 
 	String sNullVal = "";
 	if (!nullValue.IsNull()) {
 		sNullVal = VarToStr(nullValue);
 	}
 
-	unsigned int rPos = 1;
-	for (src->First(); !src->Eof && rPos < rowCnt + 1; src->Next(), rPos++)
-	{
-		Variant vRow(OPENARRAY(int, (1, 1, 1, colCnt)), varVariant);
-		Variant vElement;
-		for (unsigned int j = 1; j < colCnt + 1; j++) {
-			vElement = src->Fields->Fields[j - 1]->Value;
+	#ifdef ENABLE_USAGE_STATISTIC
+	log.WriteLog("Run");
+	log.WriteLog("Iterations", nSteps);
+	#endif
 
-			CorrectInsert::InsertIntoVarArray(vElement, vRow, 1, j, sNullVal);
+	unsigned int startPos, endPos;
+	src->First();
+	for (unsigned int step = 0; step < nSteps; ++step) {
+		
+		#ifdef ENABLE_USAGE_STATISTIC
+		log.WriteLog("Iteration", step);
+		#endif
+
+	   	startPos = step * OneStepReadRows;
+		endPos = (step + 1) * OneStepReadRows;
+
+		if (endPos > RealSourceRowCount) endPos = RealSourceRowCount;
+		--endPos;
+
+		Variant varArray(OPENARRAY(int, (1, endPos - startPos + 1, 1, colCnt)), varVariant);
+
+		for (unsigned int rPos = 1; !src->Eof && rPos < endPos - startPos + 1; src->Next(), ++rPos) {
+			for (unsigned int tabCol = 0; tabCol < colCnt; ++tabCol) {
+				CorrectInsert::InsertIntoVarArray(src->Fields->Fields[tabCol]->Value, varArray, rPos, tabCol + 1, sNullVal);
+			}
 		}
-		vData.OlePropertyGet("ListRows").OleProcedure("Add");
-        vData.OlePropertyGet("ListRows", startPos + rPos).OlePropertyGet("Range").OlePropertySet("Value", vRow);
+
+		AddRows(endPos - startPos + 1);
+		vDataChild.OlePropertySet("Value", varArray);
+
+		#ifdef ENABLE_USAGE_STATISTIC
+		log.WriteSize(sizeof(Variant) * colCnt * (endPos - startPos) + sizeof(varArray));
+		log.WriteLog("Iteration done");
+		#endif
 	}
+
+	#ifdef ENABLE_USAGE_STATISTIC
+	log.WriteLog("End");
+	#endif
 
     return this;
 }
 
 TExcelTable* TExcelTable::DeleteRow(unsigned int row)
 {
+    /// @note Отсчет идет по-программистки, с 0, а не по-людски.
+    /// @note При удалении строки лист "подтягивается" вверх
 	vData.OlePropertyGet("ListRows", row + 1).OleProcedure("Delete");
 	return this;
 }

@@ -1,9 +1,10 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
 
 #include "uTExcelTableColumn.h"
+#include "uFunctions.h"
 
 //---------------------------------------------------------------------------
 
@@ -20,12 +21,20 @@ TExcelTableColumn::TExcelTableColumn(TExcelTableColumn& src)
 	: TExcelObjectRangedTemplate<TExcelTableColumn>(src)
 {}
 
-TExcelTableColumn::~TExcelTableColumn() {}
+TExcelTableColumn::~TExcelTableColumn() 
+{}
 
-TExcelTableColumn* TExcelTableColumn::SetIdentity(int start, int step){
+/// @param start Значение с которого начинаем
+/// @param step Шаг инкремента
+/* TExcelTableColumn* TExcelTableColumn::SetIdentity(int start, int step){
 	vData.OlePropertyGet("Range").OlePropertySet("FormulaR1C1", "=R[-1]C+1");
 	vData.OlePropertyGet("Range").OlePropertyGet("Item", 2).OlePropertySet("FormulaR1C1", "=1");
 	return this;
+} */
+
+IFormatManager<TExcelTableColumn>* TExcelTableColumn::GetFormatInterface()
+{
+	return static_cast<TExcelTableColumn*>(this);
 }
 
 TExcelTableColumn* TExcelTableColumn::SetHorizontalAlign(ExcelTextAlign align) 
@@ -42,13 +51,27 @@ TExcelTableColumn* TExcelTableColumn::SetVerticalAlign(ExcelTextAlign align)
     return this;
 }
 
-/* TExcelTableColumn* TExcelTableColumn::SetBorders() {}
+TExcelTableColumn* TExcelTableColumn::SetTextWrap(bool state)
+{
+    checkDataValide();
+    vData.OlePropertySet("WrapText", state);
+    return this;
+}
 
-TExcelTableColumn* TExcelTableColumn::SetWidth() {}
-TExcelTableColumn* TExcelTableColumn::SetHeight() {}
-TExcelTableColumn* TExcelTableColumn::AutoSize() {}
+TExcelTableColumn* TExcelTableColumn::SetFormat(ExcelFormats format) 
+{
+    SetFormat(Converters::DefineFormat(format));
+    return this;
+}
 
-TExcelTableColumn* TExcelTableColumn::SetFormat() {} */
+TExcelTableColumn* TExcelTableColumn::SetFormat(const String& format) 
+{
+    checkDataValide();
+    vData.OlePropertySet("NumberFormat", System::StringToOleStr(format));
+    return this;
+}
+
+
 
 }
 

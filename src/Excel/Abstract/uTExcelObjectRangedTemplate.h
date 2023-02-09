@@ -4,14 +4,14 @@
 #include "uTExcelObjectTemplate.h"
 //---------------------------------------------------------------------------
 namespace exl {
-/** @addtogroup Templates
- * @{
+/** -------------------------------------------------------------------------
+ * @brief Шаблон для классов, в которых есть диапазоны
+ * @ingroup Templates
  * 
- * @brief Шаблон для диапазонных элементов
+ * В дополнение к базовым методам содержит функционал для работы с 
+ * диапазонами ячеек.
  * 
- * В дополнение к базовым методам содержит функционал для работы с диапазонами
- * ячеек.
- */
+ * ---------------------------------------------------------------------- **/
 template<class T>
 class DLL_EI TExcelObjectRangedTemplate : public TExcelObjectTemplate<T>
 {
@@ -37,10 +37,14 @@ protected:
     /// Проверка на корректность передачи столбика и колонки
     void checkColRow(unsigned int& col, unsigned int& row);
 
-    /// Установить дочернюю варианту на позицию
+    /// Установить и выбрать дочернюю варианту на позицию
     void selectSingle(unsigned int col, unsigned int row);
-    /// Установить дочернюю варианту на диапазон
+    /// Установить и выбрать дочернюю варианту на диапазон
     void selectRange(unsigned int startColumn, unsigned int startRow, unsigned int endColumn, unsigned int endRow);
+    /// Установить дочернюю варианту на позицию
+    void setSingle(unsigned int col, unsigned int row);
+    /// Установить дочернюю варианту на диапазон
+    void setRange(unsigned int startColumn, unsigned int startRow, unsigned int endColumn, unsigned int endRow);
 
 public:
 
@@ -49,6 +53,6 @@ public:
 
 }
 
-/// @}
+//---------------------------------------------------------------------------
 #endif
 

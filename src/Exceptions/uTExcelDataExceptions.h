@@ -1,11 +1,22 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelDataExceptionsH
 #define uTExcelDataExceptionsH
+/** @file 
+ * @brief Исключение варианты
+ * @ingroup Exceptions
+ */
 
-//---------------------------------------------------------------------------
 #include "uTExcelExceptions.h"
 //---------------------------------------------------------------------------
+/**
+ * @addtogroup Exceptions
+ * @{
+ * 
+ * @brief Базовый класс исключения варианты
+ * 
+ * Сбрасывается, если что-то не то происходит с вариантой, где живет объект 
+ * Excel. Например, объекта там нет и отправлять команду - некому.
+ * 
+*/
 class ExcelDataException : public ExcelException
 {
 public:
@@ -15,18 +26,28 @@ public:
 };
 
 //---------------------------------------------------------------------------
+/**
+ * @brief Варианта не иницилизирована
+ * 
+ */
 class ExcelDataNullException : public ExcelDataException
 {
 public:
 	ExcelDataNullException();
 };
+
 //---------------------------------------------------------------------------
-class ExcelSelectCellException : public ExcelDataException
+/**
+ * @brief 
+ * 
+ */
+/* class ExcelSelectCellException : public ExcelDataException
 {
 public:
 	ExcelSelectCellException();
 	ExcelSelectCellException(const char* type);
-};
+}; */
+/// @}
 
 //---------------------------------------------------------------------------
 #endif

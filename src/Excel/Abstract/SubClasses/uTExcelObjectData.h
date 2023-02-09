@@ -1,13 +1,17 @@
 #ifndef uTExcelObjectDataH
 #define uTExcelObjectDataH
+/** @file 
+ * @ingroup Abstract
+ * @brief Хранилище вариант
+ * @details Где обитают полученные от экселя COM-объекты 
+ */
 
 #include "uDll.h"
 //---------------------------------------------------------------------------
 namespace exl {
-/// @addtogroup Abstract
-/// @{
-/**
+/** -------------------------------------------------------------------------
  * @brief Класс-хранилище для Variant
+ * @ingroup Abstract
  * 
  * Является абстрактным понятием.
  * 
@@ -23,22 +27,24 @@ namespace exl {
  * Типовые решения взаимодействия также хранятся здесь.
  * 
  * Не имеет открытых методов, так как является чисто служебным элементом.
- */
+ * Не доступен для создания.
+ * 
+ * ---------------------------------------------------------------------- **/
 class DLL_EI TExcelObjectData
 {
-public:
-    TExcelObjectData();
-    TExcelObjectData(const Variant& data);
-	TExcelObjectData(const TExcelObjectData&);
 protected:
+    TExcelObjectData(); ///< Базовый
+    TExcelObjectData(const Variant& data); ///< С иницилизацией данными
+	TExcelObjectData(const TExcelObjectData&); ///< Копирование
 	~TExcelObjectData();
-    //void operator=();
+
+    //TExcelObjectData operator=(const TExcelObjectData&);
 
 protected:
     Variant vData; ///< Основная переменная
     Variant vDataChild; ///< Переменная дочернего элемента
 
-    void checkDataValide(); ///< @brief Проверка варианты на корректность
+    void checkDataValide(); ///< Проверка варианты на корректность
 
     // Обще-типовые обертки функций для внутреннего использования
 	unsigned int getChildCountByType(const String& oType); ///< Посчитать кол-во дочерних элементов
@@ -52,6 +58,7 @@ public:
 };
 
 }
-/*! @} */
+
+//---------------------------------------------------------------------------
 #endif
 

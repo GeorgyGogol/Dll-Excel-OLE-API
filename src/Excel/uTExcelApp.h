@@ -1,61 +1,55 @@
-﻿//---------------------------------------------------------------------------
-
-#ifndef uTExcelAppH
+﻿#ifndef uTExcelAppH
 #define uTExcelAppH
 
-//---------------------------------------------------------------------------
 #include "uTExcelWorkbook.h"
 //---------------------------------------------------------------------------
 namespace exl {
-//---------------------------------------------------------------------------
-class DLL_EI TExcelApp : public TExcelObjectTemplate<TExcelApp>
+/** -------------------------------------------------------------------------
+ * @brief Класс для работы с приложением Excel
+ * @ingroup ExcelClientObjects
+ * 
+ * ---------------------------------------------------------------------- **/
+class DLL_EI TExcelApp :
+	public TExcelObjectTemplate<TExcelApp>
 {
 public:
 	TExcelApp();
-    // И сразу иницилизировать приложение
-	TExcelApp(bool visible);  
-	TExcelApp(bool visible, unsigned int nSheetsInNewWorkbook);
-    
     TExcelApp(const TExcelApp& src);
     ~TExcelApp();
 
-private:
-	bool Notifications;
+	TExcelApp(bool visible);  
+	TExcelApp(bool visible, unsigned int nSheetsInNewWorkbook);
 
-	void Init();
+private:
+	bool Notifications; ///< Включены ли оповещения
+
+	void Init(); ///< Метод первичной иницилизации
 
 public:
-	//TExcelApp* SetWorkfolder(const String& path);
-
-    // Создать экземпляр приложения
 	TExcelApp* CreateApp(bool visible);
 	TExcelApp* CreateApp(bool visible, unsigned int nSheetsInNewWorkbook);
 	
-	// Подключится/отключиться
-	TExcelApp* AttachApp();
-	void DeattachApp();
-	
-	// Попробовать подключится, иначе - создать
-	TExcelApp* TryAttachApp();
+	TExcelApp* AttachApp(); ///< Подключиться к приложению
+	void DeattachApp(); ///< Отключиться
+	TExcelApp* TryAttachApp(); ///< Попытаться подключиться, или создать экземпляр нового
 
-	// Закрыть 
-	void Close(bool silent = true); // Штатно
-	void Free(); // Внештатно
+	void Close(bool silent = true); ///< Закрыть штатно
+	void Free(); ///< Освободить кабанчиком
 
-	// Настройки приложения
-	TExcelApp* SetExcelNotifications(bool stat);
-	TExcelApp* SetSheetsInNewWorkbook(unsigned int N);
+	TExcelApp* SetExcelNotifications(bool stat); ///< Установить режим отображения сообщений
+	TExcelApp* SetSheetsInNewWorkbook(unsigned int N); ///< Установить количество новых страниц
 
 	// Всё, что Workbook касается - породить или получить текущую книгу
     unsigned int WorkbookCount();
 	TExcelWorkbook* CreateWorkbook();
 	TExcelWorkbook* CreateWorkbook(const String& workbookName);
 	TExcelWorkbook* GetCurrentWorkbook();
-
 	TExcelWorkbook* OpenWorkbook(const String& path);
+	
 };
 
 }
+
 //---------------------------------------------------------------------------
 #endif
 

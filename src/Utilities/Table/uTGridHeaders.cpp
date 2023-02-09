@@ -72,7 +72,7 @@ TGridHeaders::iterator TGridHeaders::End() {
 }
 
 TGridHeaders::iterator TGridHeaders::Next() {
-	if (it == Headers.end()) it = Headers.end();
+	if (it != Headers.end()) ++it;
 	return it;
 }
 

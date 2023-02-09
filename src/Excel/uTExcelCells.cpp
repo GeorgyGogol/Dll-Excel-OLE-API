@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "uTExcelCells.h"
+#include "uFunctions.h"
 
 //---------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ TExcelCells::TExcelCells(TExcelCells& src)
 {
 }
 
-TExcelCells::~TExcelCells() 
+TExcelCells::~TExcelCells()
 {}
 
 unsigned int TExcelCells::GetColumnsCount() 
@@ -36,6 +37,9 @@ unsigned int TExcelCells::GetRowCount()
     return getChildCountByType("Rows");
 }
 
+/// @param col Столбец
+/// @param row Строка
+/// @return Ячейка
 TExcelCells* TExcelCells::GetCell(unsigned int col, unsigned int row)
 {
 	selectSingle(col, row);
@@ -43,6 +47,11 @@ TExcelCells* TExcelCells::GetCell(unsigned int col, unsigned int row)
     return out;
 }
 
+/// @param startColumn С какого столбика
+/// @param startRow С какой строки
+/// @param endColumn По какой столбик
+/// @param endRow И по какую строку
+/// @return Диапазон ячеек
 TExcelCells* TExcelCells::GetCells(
     unsigned int startColumn, unsigned int startRow,
     unsigned int endColumn, unsigned int endRow
@@ -111,6 +120,12 @@ String TExcelCells::ReadValueString() {
 	return out;
 }
 
+
+IFormatManager<TExcelCells>* TExcelCells::GetFormatInterface()
+{
+    return static_cast<IFormatManager<TExcelCells>*>(this);
+}
+
 TExcelCells* TExcelCells::SetHorizontalAlign(ExcelTextAlign align)
 {
     checkDataValide();
@@ -125,42 +140,60 @@ TExcelCells* TExcelCells::SetVerticalAlign(ExcelTextAlign align)
     return this;
 }
 
-/*
-TExcelCells* TExcelCells::SetBorders()
+TExcelCells* TExcelCells::SetTextWrap(bool state)
 {
     checkDataValide();
-    // TODO
+    vData.OlePropertySet("WrapText", state);
     return this;
 }
 
-TExcelCells* TExcelCells::SetWidth()
+TExcelCells* TExcelCells::SetFormat(ExcelFormats format) 
 {
-    checkDataValide();
-    // TODO
+    SetFormat(Converters::DefineFormat(format));
     return this;
 }
 
-TExcelCells* TExcelCells::SetHeight()
+TExcelCells* TExcelCells::SetFormat(const String& format) 
 {
     checkDataValide();
-    // TODO
+    vData.OlePropertySet("NumberFormat", System::StringToOleStr(format));
     return this;
 }
 
-TExcelCells* TExcelCells::AutoSize()
+IBorderManager<TExcelCells>* TExcelCells::GetBorderInterface() 
 {
-    checkDataValide();
-    // TODO
+    return static_cast<IBorderManager<TExcelCells>*>(this);
+}
+
+/* 
+TExcelCells* TExcelCells::SetBordersAll(XlLineStyle style, XlBorderWeight weight) 
+{
+
+}
+ */
+
+TExcelCells* TExcelCells::SetBorder(XlBordersIndex border, XlLineStyle style, XlBorderWeight weight) 
+{
+    Variant vBorder = vData.OlePropertyGet("Borders", border);
+    vBorder.OlePropertySet("LineStyle", style);
+    vBorder.OlePropertySet("Weight", weight);
     return this;
 }
 
-TExcelCells* TExcelCells::SetFormat()
+/* 
+TExcelCells* TExcelCells::RemoveBordersAll() 
 {
-    checkDataValide();
-    // TODO
-    return this;
+    //Variant vBorder = vData.OlePropertyGet("Borders", border);
+    //vBorder.OlePropertySet("LineStyle", style);
 }
-*/
+ */
+
+TExcelCells* TExcelCells::RemoveBorder(XlBordersIndex border) 
+{
+    Variant vBorder = vData.OlePropertyGet("Borders", border);
+    vBorder.OlePropertySet("LineStyle", xlNone);
+}
+
 
 }
 

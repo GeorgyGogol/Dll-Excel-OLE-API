@@ -7,6 +7,9 @@
 #include "uTExcelTableCreatorException.h"
 #include "uTExcelSheet.h"
 
+#include "uFunctions.h"
+#include "uCheckers.h"
+
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -14,10 +17,6 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-TTableCreator::TTableCreator()
-	: Sheet(NULL), Headers(NULL)
-{}
-
 TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet, const String& tableTitle, const String& tableName)
 	: Sheet(NULL), Headers(NULL)
 {
@@ -31,7 +30,6 @@ TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet, const Strin
 }
 
 TTableCreator::TTableCreator(TExcelObject* sheet, TDataSet* dataSet)
-	: Sheet(NULL), Headers(NULL)
 {
 	PrepareNewData(sheet, dataSet);
 }
@@ -55,9 +53,7 @@ TTableCreator::TTableCreator(TExcelObject* sheet, TDBGridEh* gridEh)
 }
 
 TTableCreator::~TTableCreator()
-{
-	ResetData();
-}
+{}
 
 void TTableCreator::readDataSet(TDataSet* dataSet) {
 	if (!Headers) throw ExcelTableCreatorException("readDataSet", "Headers is not created, cannot read DataSet!");
@@ -74,11 +70,6 @@ void TTableCreator::readDataSet(TDataSet* dataSet) {
 	unsigned int tabColPassed; // Кол-во пропущенных столбиков
 	unsigned int pos = 1; // Счетчик по записям
 
-	// Буферы для разных типов
-	String buf;
-	long double dBuf;
-	TDateTime dtBuf;
-
 	for (dataSet->First(); !dataSet->Eof && pos < nRecords + 1; dataSet->Next(), pos++)
 	{
         tabColPassed = 0;
@@ -88,21 +79,10 @@ void TTableCreator::readDataSet(TDataSet* dataSet) {
 				continue;
 			}
 
-			//if (!src->Fields[tabCol]->IsNull)
-			//buf = VarToStrDef(dataSet->Fields->Fields[tabCol]->Value, "0");
-			//else buf = "";
-
-			buf = dataSet->Fields->FieldByName(Headers->GetHeader(tabCol)->FieldName)->AsString;
-
-			if(TryStrToFloat(buf, dBuf)){
-				varArr.PutElement(dBuf, pos, tabCol + 1 - tabColPassed);
-			}
-			else if (TryStrToTime(buf, dtBuf)){
-				varArr.PutElement(dtBuf, pos, tabCol + 1 - tabColPassed);
-			}
-			else {
-				varArr.PutElement(buf, pos, tabCol + 1 - tabColPassed);
-            }
+			CorrectInsert::InsertIntoVarArray(
+				dataSet->Fields->FieldByName(Headers->GetHeader(tabCol)->FieldName)->AsString,
+				varArr, pos, tabCol + 1 - tabColPassed, "0"
+			);
         }
 	}
 
@@ -128,8 +108,10 @@ void TTableCreator::check(unsigned int& col, unsigned int& row)
 void TTableCreator::ResetData() {
     Sheet = NULL;
 
-    if (Headers) delete Headers;
-	Headers = NULL;
+	if (Headers) {
+		delete Headers;
+		Headers = NULL;
+	} 
 
 	varData = Null();
 	nRecords = 0;
@@ -173,7 +155,7 @@ TExcelCells* TTableCreator::InsertData(unsigned int col, unsigned int row, bool 
 	unsigned int sCol = col, sRow = row;
 	TExcelSheet* sheet = (TExcelSheet*)Sheet;
 
-	if (needInsertFieldNames){
+	if (needInsertFieldNames) {
 		TExcelCells* TableHeadersCells;
 		TableHeadersCells = sheet->SelectCells(col, row, col + Headers->CountVisible() - 1, row + nRecords + Headers->Deep() - 1);
 		TableHeadersCells->Insert(Headers->generateVariant());
@@ -244,8 +226,6 @@ TExcelTable* TTableCreator::CreateTable(unsigned int col, unsigned int row) {
 	
 	if (TableName.Length() > 0) 
 		vTable.OlePropertySet("Name", System::StringToOleStr(TableName));
-	else
-		TableName = VarToStr(vTable.OlePropertyGet("Name"));
 	
 	if (TableStyle.Length() > 0) vTable.OlePropertySet("TableStyle", System::StringToOleStr(TableStyle));
 

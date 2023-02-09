@@ -49,12 +49,6 @@ Variant TExcelObject::GetParentVariant()
     else return Null();
 }
 
-TExcelObject* TExcelObject::GetCurrentSelectedChild()
-{
-    TExcelObject* out = new TExcelObject(this, vDataChild);
-    return out;
-}
-
 TExcelObject* TExcelObject::Show() {
     checkDataValide();
     vData.OlePropertySet("Visible", true);
