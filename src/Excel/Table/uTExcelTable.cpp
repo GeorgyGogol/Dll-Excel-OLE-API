@@ -8,6 +8,7 @@
 #include "uCheckers.h"
 
 #include "Log.h"
+#include "uBuildSettings.h"
 
 #define MBYTES_TO_BYTES(mb) mb * 1024 * 1024
 
@@ -141,10 +142,13 @@ TExcelTable* TExcelTable::AddRows(unsigned int from, unsigned int cnt)
 	if (!checkers::checkNumber(cnt)) throw "Cannot add less than 1 row";
 
 	String StartRowString = vData.OlePropertyGet("ListRows", from).OlePropertyGet("Range").OlePropertyGet("Address");
+
+	unsigned int StartRow = GetRowFromStr(StartRowString) + (from - 1);
+	unsigned int StartColumn = GetColFromStr(StartRowString);
 	String end = StartRowString.SubString(StartRowString.Pos(":") + 1, StartRowString.Length() - StartRowString.Pos(":"));
 	unsigned int endColumn = GetColFromStr(end);
 
-	String sRange = StartRowString.SubString(1, StartRowString.Pos(":")) + GetCellString(endColumn, from + cnt);
+	String sRange = GetRangeString(StartColumn, StartRow, endColumn, StartRow + cnt - 1);
 
 	vDataChild = GetParentVariant().OlePropertyGet("Range", System::StringToOleStr(sRange));
 	vDataChild.OleProcedure("Insert", -4121);
@@ -205,7 +209,7 @@ TExcelTable* TExcelTable::AddRows(TDataSet* src, const Variant& nullValue)
 
 		Variant varArray(OPENARRAY(int, (1, endPos - startPos + 1, 1, colCnt)), varVariant);
 
-		for (unsigned int rPos = 1; !src->Eof && rPos < endPos - startPos + 1; src->Next(), ++rPos) {
+		for (unsigned int rPos = 1; !src->Eof && rPos < endPos - startPos + 1 + 1; src->Next(), ++rPos) {
 			for (unsigned int tabCol = 0; tabCol < colCnt; ++tabCol) {
 				CorrectInsert::InsertIntoVarArray(src->Fields->Fields[tabCol]->Value, varArray, rPos, tabCol + 1, sNullVal);
 			}

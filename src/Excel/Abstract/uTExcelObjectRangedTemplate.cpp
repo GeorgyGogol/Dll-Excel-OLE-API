@@ -78,7 +78,7 @@ unsigned int TExcelObjectRangedTemplate<T>::GetRowFromStr(const String& str) {
 	int len = str.Length() - secondPos;
 
 	if (str.Pos(":")) {
-		len -= (str.Pos(":") + 1);
+		len = str.Length() - str.Pos(":") - secondPos + 1;
 	}
 
 	String aim = str.SubString(secondPos, len);

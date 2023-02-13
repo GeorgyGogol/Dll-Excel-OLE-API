@@ -100,8 +100,8 @@ void TLog::WriteFileStamp()
 
 	log.open(LOG_FILE_NAME, ios::app);
 	if (log.is_open()) {
-		for (auto i = 0; 72; i++) log<<"-";
-		log<<"Log start: "<<dtStamp.t_str()<<endl;
+		for (auto i = 0; i < 72; i++) log<<"-";
+		log<<"\nLog start: "<<dtStamp.t_str()<<endl;
 		log<<endl;
 		log.close();
 	}

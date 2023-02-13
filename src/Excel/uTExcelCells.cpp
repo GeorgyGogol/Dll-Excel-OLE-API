@@ -191,7 +191,8 @@ TExcelCells* TExcelCells::RemoveBordersAll()
 TExcelCells* TExcelCells::RemoveBorder(XlBordersIndex border) 
 {
     Variant vBorder = vData.OlePropertyGet("Borders", border);
-    vBorder.OlePropertySet("LineStyle", xlNone);
+	vBorder.OlePropertySet("LineStyle", xlNone);
+	return this;
 }
 
 
