@@ -4,7 +4,13 @@
 //---------------------------------------------------------------------------
 
 #include "uDll.h"
+
+// interfaces
 #include "uIFormatManager.h"
+#include "uICreateTable.h"
+#include "uIGetTable.h"
+#include "uIBorderManager.h"
+
 
 extern "C" {
 

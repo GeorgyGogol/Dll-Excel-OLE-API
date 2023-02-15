@@ -1,11 +1,21 @@
-//---------------------------------------------------------------------------
-
 #ifndef uTExcelAppExceptionsH
 #define uTExcelAppExceptionsH
+/** @file 
+ * @brief Исключения приложения-хоста
+ * @ingroup Exceptions
+ */
 
-//---------------------------------------------------------------------------
 #include "uTExcelExceptions.h"
 //---------------------------------------------------------------------------
+/**
+ * @addtogroup Exceptions
+ * @{
+ * 
+ * @brief Базовый класс для исключений приложения
+ * 
+ * Привязан к TExcelApp
+ *
+ */
 class ExcelAppException : public ExcelException
 {
 public:
@@ -13,6 +23,10 @@ public:
 };
 
 //---------------------------------------------------------------------------
+/**
+ * @brief Ошибка взаимодействия с неиницилизированным приложением
+ * 
+ */
 class ExcelAppNotAttachedException : public ExcelAppException
 {
 public:
@@ -20,11 +34,16 @@ public:
 };
 
 //---------------------------------------------------------------------------
+/**
+ * @brief Ошибка, которая возникает при попытке подключиться еще раз
+ * 
+ */
 class ExcelAppAttachedException : public ExcelAppException
 {
 public:
 	ExcelAppAttachedException(const char* method);
 };
+/// @}
 
 //---------------------------------------------------------------------------
 #endif

@@ -1,8 +1,9 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 #pragma hdrstop
 
 #include "uTExcelApp.h"
 #include "uTExcelAppExceptions.h"
+#include "Log.h"
 
 //---------------------------------------------------------------------------
 
@@ -17,6 +18,30 @@ TExcelApp::TExcelApp()
     Init();
 }
 
+TExcelApp::TExcelApp(const TExcelApp& src)
+	: TExcelObjectTemplate<TExcelApp>(src)
+{
+    Notifications = src.Notifications;
+}
+
+TExcelApp::~TExcelApp()
+{
+#ifdef ENABLE_USAGE_STATISTIC
+	TLog log(CallLogReason::WriteUsedMemory);
+	log.WriteSize(SizeOfThis());
+#endif
+}
+
+/** @ingroup ExcelClientObjects
+ * @defgroup ExcelInitMethods Методы подключения к Excel
+ * 
+ * Методы, с помощью которых устанавливается связь с приложением.
+ * 
+ * @param visible Видимость
+ * @param nSheetsInNewWorkbook Количество листов в новой книге
+ * @{
+ */
+
 TExcelApp::TExcelApp(bool visible)
 	: TExcelObjectTemplate<TExcelApp>()
 {
@@ -30,61 +55,18 @@ TExcelApp::TExcelApp(bool visible, unsigned int nSheetsInNewWorkbook)
 	Init();
 	CreateApp(visible, nSheetsInNewWorkbook);
 }
+/// @}
 
-TExcelApp::TExcelApp(const TExcelApp& src)
-	: TExcelObjectTemplate<TExcelApp>(src)
-{
-    Notifications = src.Notifications;
-}
-
-TExcelApp::~TExcelApp()
-{
-#ifdef _DEBUG
-	using namespace std;
-
-	ofstream log;
-
-	String dtStamp = Now();
-
-	if (!FileExists("ExcelUseLog.log")) {
-		log.open("ExcelUseLog.log", ios::trunc);
-		if (log.is_open()) {
-			log<<"Log start: "<<dtStamp.t_str()<<endl;
-			log<<"Single size: "<<sizeof(TExcelObject)<<" Bytes"<<endl;
-			log<<endl;
-			log.close();
-		}
-	}
-
-	log.open("ExcelUseLog.log", ios::app);
-	if (log.is_open()) {
-		double size = double(SizeOfThis());
-		String sizeMulty = "B";
-
-		if (size > 1024.0 * 5) {
-			size /= 1024;
-			sizeMulty = "KB";
-		}
-
-		log<<dtStamp.t_str()<<": ";
-		log<<size<<" ";
-		log<<sizeMulty.t_str();
-		log<<endl;
-
-		log.close();
-	}
-#endif
-}
-
+/// @details Иницилизация при создании объекта
 void TExcelApp::Init() {
 	Notifications = true;
 	vData = Null();
 }
 
+/// @ingroup ExcelInitMethods
+/// @{
 TExcelApp* TExcelApp::CreateApp(bool visible) {
-#ifdef EXCEL_APP_CREATED_ERROR
 	if (!vData.IsNull()) throw ExcelAppAttachedException("CreateApp");
-#endif
 
 	if (vData.IsNull()){
 		vData = Variant::CreateObject("Excel.Application");
@@ -95,9 +77,7 @@ TExcelApp* TExcelApp::CreateApp(bool visible) {
 
 TExcelApp* TExcelApp::CreateApp(bool visible, unsigned int nSheetsInNewWorkbook)
 {
-#ifdef EXCEL_APP_CREATED_ERROR
 	if (!vData.IsNull()) throw ExcelAppAttachedException("CreateApp");
-#endif
 
 	if (nSheetsInNewWorkbook < 1) nSheetsInNewWorkbook = 1;
 	if (vData.IsNull()) {
@@ -107,6 +87,7 @@ TExcelApp* TExcelApp::CreateApp(bool visible, unsigned int nSheetsInNewWorkbook)
 	}
 	return this;
 }
+/// @}
 
 TExcelApp* TExcelApp::AttachApp() {
 	if (!vData.IsNull()) throw ExcelAppAttachedException("AttachApp");
@@ -141,8 +122,13 @@ void TExcelApp::Close(bool silent) {
 	vData.OlePropertySet("Interactive", true);
 	vData.OlePropertySet("DisplayAlerts", true);
 	vData = Null();
+
+	/// Удалить всю дочернюю структуру, т.к. больше нет связи, дочерние элементы
+	/// не актуальны.
+	ClearChilds();
 }
 
+/// @details Освобождает экземпляр эксель и вычищает себя из памяти
 void TExcelApp::Free(){
 	vData.OlePropertySet("DisplayAlerts", false);
 	vData.OleProcedure("Quit");
@@ -202,6 +188,8 @@ TExcelWorkbook* TExcelApp::GetCurrentWorkbook() {
 	return out;
 }
 
+/// @details Открывает книгу по запрашиваемому пути
+/// @param path Путь до файла
 TExcelWorkbook* TExcelApp::OpenWorkbook(const String& path)
 {
 	if (vData.IsNull()) throw ExcelAppNotAttachedException("CreateWorkbook");

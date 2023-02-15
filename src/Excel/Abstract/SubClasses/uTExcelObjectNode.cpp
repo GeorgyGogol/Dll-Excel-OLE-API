@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -23,10 +23,25 @@ TExcelObjectNode::TExcelObjectNode(TExcelObjectNode* pParent)
     Parent->AddChildClass(this);
 }
 
+/// @param src Источник копии
 TExcelObjectNode::TExcelObjectNode(const TExcelObjectNode& src) 
 {
+	/**
+	 * При создании копии элемена, мы должны запомнить общего родителя
+	 * и сообщить ему радостную весть.
+	 */
     Parent = src.Parent;
     Parent->AddChildClass(this);
+}
+
+/// @param src Источник копии
+/// @return указатель на левый объект
+TExcelObjectNode TExcelObjectNode::operator=(const TExcelObjectNode& src)
+{
+	if (Parent) Parent->RemoveChildClass(this);
+    Parent = src.Parent;
+    Parent->AddChildClass(this);
+	return this;
 }
 
 TExcelObjectNode::~TExcelObjectNode() 
@@ -38,16 +53,9 @@ TExcelObjectNode::~TExcelObjectNode()
 	 * нет. Основная реализация деструктора полностью ложится на дочерний 
 	 * класс (в иерархии наследования, НЕ принадлежности)
 	 */
-	
-	while (Childs.size() > 0) // Пока есть 
-	{
-		/// \details При удалении объект сам себя вычеркнет, т.е.
-		/// нам нужон всегда только первый элемент.
-		/// Т.о. освобождение памяти происходит рекурсивно.
-		delete *Childs.begin(); // Удоляем
-	}
+	ClearChilds();
 
-	/// @details Если есть родитель - сообщим ему "новость" и забудем про него
+	/// Если есть родитель - сообщим ему "новость" и забудем про него
 	if (Parent) {
 		Parent->RemoveChildClass(this);
 		Parent = 0;
@@ -69,6 +77,25 @@ TExcelObjectNode* TExcelObjectNode::getParentNode() const
 	return Parent;
 }
 
+void TExcelObjectNode::ClearChilds()
+{
+	/**
+	 * Если ВДРУГ у нас появилась необходимость удалить всю дочернюю
+	 * структуру, то этот метод сделает это! Метод переехал из действия
+	 * деструктора.
+	 */
+	while (Childs.size() > 0) // Пока есть дочерние элементы
+	{
+		/** 
+		 * При удалении объект сам себя вычеркнет, т.е. нам нужон всегда только
+		 * первый элемент. Т.о. освобождение памяти происходит лавиной.
+		 */
+		delete *Childs.begin(); // Удоляем
+	}
+}
+
+/// @{ @addtogroup ENABLE_USAGE_STATISTIC
+/// @{
 #ifdef ENABLE_USAGE_STATISTIC
 /// @return Итератор на первый элемент контейнера
 std::list<TExcelObjectNode*>::iterator TExcelObjectNode::Begin()
@@ -82,6 +109,7 @@ std::list<TExcelObjectNode*>::iterator TExcelObjectNode::End()
     return Childs.end();
 }
 #endif
+/// @} @}
 
 }
 

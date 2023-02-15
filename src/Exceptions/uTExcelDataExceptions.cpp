@@ -30,11 +30,11 @@ ExcelDataNullException::ExcelDataNullException()
     : ExcelDataException(ERROR_EXCEL_DATA_ISNULL)
 {}
 
-ExcelSelectCellException::ExcelSelectCellException()
+/* ExcelSelectCellException::ExcelSelectCellException()
     : ExcelDataException(ERROR_EXCEL_CELL_SELECT_UNDEFINED)
 {}
 
 ExcelSelectCellException::ExcelSelectCellException(const char* type)
     : ExcelDataException(String(ERROR_EXCEL_CELL_SELECT_DEFINED) + String(type))
-{}
+{} */
 

@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 #pragma hdrstop
 
@@ -11,19 +11,39 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-TExcelSheet::TExcelSheet(TExcelObject* pParent, const Variant& data) 
-    : TExcelObjectRangedTemplate<TExcelSheet>(pParent, data)
+TExcelSheet::TExcelSheet(TExcelObject* pParent, const Variant& data) :
+    TExcelObjectRangedTemplate<TExcelSheet>(pParent, data),
+	ACreateTableController()
 {
 	vDataChild = vData.OlePropertyGet("Range", "A1");
 }
 
-TExcelSheet::TExcelSheet(const TExcelSheet& src)
-	: TExcelObjectRangedTemplate<TExcelSheet>(src)
+TExcelSheet::TExcelSheet(const TExcelSheet& src) :
+	TExcelObjectRangedTemplate<TExcelSheet>(src),
+	ACreateTableController()
 {
 }
 
 TExcelSheet::~TExcelSheet() {
 }
+
+TExcelCells* TExcelSheet::GetCell(unsigned int col, unsigned int row)
+{
+	setSingle(col, row);
+	TExcelCells* out = new TExcelCells(this, vDataChild);
+    return out;
+}
+
+TExcelCells* TExcelSheet::GetCell(
+	unsigned int startColumn, unsigned int startRow, 
+	unsigned int endColumn, unsigned int endRow
+	)
+{
+	setRange(startColumn, startRow, endColumn, endRow);
+	TExcelCells* out = new TExcelCells(this, vDataChild);
+    return out;
+}
+
 
 TExcelCells* TExcelSheet::SelectCell(unsigned int col, unsigned int row) {
 	selectSingle(col, row);
@@ -34,13 +54,12 @@ TExcelCells* TExcelSheet::SelectCell(unsigned int col, unsigned int row) {
 TExcelCells* TExcelSheet::SelectCells(
     unsigned int startColumn, unsigned int startRow,
     unsigned int endColumn, unsigned int endRow
-    )
+	)
 {
 	selectRange(startColumn, startRow, endColumn, endRow);
 	TExcelCells* out = new TExcelCells(this, vDataChild);
     return out;
 }
-
 
 TExcelCells* TExcelSheet::SelectColumn(unsigned int column) {
 	AnsiString currRange;
@@ -50,11 +69,14 @@ TExcelCells* TExcelSheet::SelectColumn(unsigned int column) {
 	return out;
 }
 
-//void TExcelSheet::HideColumn(unsigned int column) {
-//	AnsiString currRange;
-//    currRange.printf("%s:%s", ColToStrA(column).c_str(), ColToStrA(column).c_str());
-//    vData.OlePropertyGet("Range", System::StringToOleStr(currRange)).OleProcedure("Hide");
-//}
+TExcelCells* TExcelSheet::SelectColumns(unsigned int colStart, unsigned int colEnd) {
+	// TODO: Check colStart < colEnd
+	AnsiString currRange;
+	currRange.printf("%s:%s", ColToStrA(colStart).c_str(), ColToStrA(colEnd).c_str());
+	seekAndSetDataChild("Range", currRange);
+	TExcelCells* out = new TExcelCells(this, vDataChild);
+	return out;
+}
 
 TExcelCells* TExcelSheet::SelectRow(unsigned int row) {
 	AnsiString currRange;
@@ -64,16 +86,23 @@ TExcelCells* TExcelSheet::SelectRow(unsigned int row) {
 	return out;
 }
 
+TExcelCells* TExcelSheet::SelectRows(unsigned int rowStart, unsigned int rowEnd) {
+	AnsiString currRange;
+    currRange.printf("%i:%i", rowStart, rowEnd);
+	seekAndSetDataChild("Range", currRange);
+	TExcelCells* out = new TExcelCells(this, vDataChild);
+	return out;
+}
+
 TExcelCells* TExcelSheet::InsertDataSet(
 	unsigned int startColumn, unsigned int startRow,
 	TDataSet* dataSet,
-	bool needInsertFieldNames,
-	bool needDisableSet
+	bool needInsertFieldNames
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = dataSet->RecNo;
-	if (needDisableSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, dataSet);
@@ -82,31 +111,19 @@ TExcelCells* TExcelSheet::InsertDataSet(
 
 	// Вернем GUI (при необходимости)
 	dataSet->RecNo = userPos;
-	if (needDisableSet) dataSet->EnableControls();
+	if (NeedDisableDataSet) dataSet->EnableControls();
 
 	return range;
 }
 
 TExcelTable* TExcelSheet::CreateTable(
-	unsigned int startColumn, unsigned int startRow
-	)
-{
-	//TTableCreator* creator = new TTableCreator(this);
-	//TExcelTable* table = creator->CreateTable(startColumn, startRow);
-	//delete creator;
-
-	return 0; //table;
-}
-
-TExcelTable* TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow,
-	TDataSet* dataSet, const String& tableTitle, const String& tableName,
-	bool needDisableSet
+	TDataSet* dataSet, const String& tableTitle, const String& tableName
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = dataSet->RecNo;
-	if (needDisableSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, dataSet, tableTitle, tableName);
@@ -115,20 +132,19 @@ TExcelTable* TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	dataSet->RecNo = userPos;
-	if (needDisableSet) dataSet->EnableControls();
+	if (NeedDisableDataSet) dataSet->EnableControls();
 
 	return table;
 }
 
 TExcelTable *TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow, 
-	TDataSet *dataSet, const String &tableTitle, 
-	bool needDisableSet
+	TDataSet *dataSet, const String &tableTitle
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = dataSet->RecNo;
-	if (needDisableSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, dataSet, tableTitle);
@@ -137,7 +153,7 @@ TExcelTable *TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	dataSet->RecNo = userPos;
-	if (needDisableSet) dataSet->EnableControls();
+	if (NeedDisableDataSet) dataSet->EnableControls();
 
 	return table;
 }
@@ -145,13 +161,12 @@ TExcelTable *TExcelSheet::CreateTable(
 
 TExcelTable* TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow,
-	TDataSet* dataSet,
-	bool needDisableSet
+	TDataSet* dataSet
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = dataSet->RecNo;
-	if (needDisableSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) dataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, dataSet);
@@ -160,35 +175,19 @@ TExcelTable* TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	dataSet->RecNo = userPos;
-	if (needDisableSet) dataSet->EnableControls();
+	if (NeedDisableDataSet) dataSet->EnableControls();
 
 	return table;
 }
 
-TExcelTable *TExcelSheet::CreateTable(TDataSet *dataSet, const String &tableTitle, const String &tableName, bool needDisableSet)
-{
-    return CreateTable(1, 1, dataSet, tableTitle, tableName, needDisableSet);
-}
-
-TExcelTable *TExcelSheet::CreateTable(TDataSet *dataSet, const String &tableTitle, bool needDisableSet)
-{
-    return CreateTable(1, 1, dataSet, tableTitle, needDisableSet);
-}
-
-TExcelTable *TExcelSheet::CreateTable(TDataSet *dataSet, bool needDisableSet)
-{
-    return CreateTable(1, 1, dataSet, needDisableSet);
-}
-
 TExcelTable* TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow,
-	TDBGridEh* gridEh, const String& tableTitle, const String& tableName,
-	bool needDisableSet
+	TDBGridEh* gridEh, const String& tableTitle, const String& tableName
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = gridEh->DataSource->DataSet->RecNo;
-	if (needDisableSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, gridEh, tableTitle, tableName);
@@ -197,20 +196,19 @@ TExcelTable* TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	gridEh->DataSource->DataSet->RecNo = userPos;
-	if (needDisableSet) gridEh->DataSource->DataSet->EnableControls();
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->EnableControls();
 
 	return table;
 }
 
 TExcelTable* TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow,
-	TDBGridEh* gridEh, const String& tableTitle,
-	bool needDisableSet
+	TDBGridEh* gridEh, const String& tableTitle
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = gridEh->DataSource->DataSet->RecNo;
-	if (needDisableSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, gridEh, tableTitle);
@@ -219,20 +217,19 @@ TExcelTable* TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	gridEh->DataSource->DataSet->RecNo = userPos;
-	if (needDisableSet) gridEh->DataSource->DataSet->EnableControls();
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->EnableControls();
 
 	return table;
 }
 
 TExcelTable *TExcelSheet::CreateTable(
 	unsigned int startColumn, unsigned int startRow, 
-	TDBGridEh *gridEh, 
-	bool needDisableSet
+	TDBGridEh *gridEh
 	)
 {
 	// Запомним GUI
 	unsigned int userPos = gridEh->DataSource->DataSet->RecNo;
-	if (needDisableSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->DisableControls(); // По желанию, т.к. может быть ОЧЕНЬ НЕПРИЯТНАЯ ЛЕДИ-БАГ
 
 	// Сделаем вид, что работаем
 	TTableCreator* creator = new TTableCreator(this, gridEh);
@@ -241,24 +238,17 @@ TExcelTable *TExcelSheet::CreateTable(
 
 	// Вернем GUI
 	gridEh->DataSource->DataSet->RecNo = userPos;
-	if (needDisableSet) gridEh->DataSource->DataSet->EnableControls();
+	if (NeedDisableDataSet) gridEh->DataSource->DataSet->EnableControls();
 
 	return table;
 }
 
-TExcelTable *TExcelSheet::CreateTable(TDBGridEh *gridEh, const String &tableTitle, const String &tableName, bool needDisableSet)
+TExcelTable* TExcelSheet::GetTable(const String& tableName)
 {
-    return CreateTable(1, 1, gridEh, tableTitle, tableName, needDisableSet);
-}
+	vDataChild = vData.OlePropertyGet("ListObjects").OlePropertyGet("Item", System::StringToOleStr(tableName));
 
-TExcelTable *TExcelSheet::CreateTable(TDBGridEh *gridEh, const String &tableTitle, bool needDisableSet)
-{
-    return CreateTable(1, 1, gridEh, tableTitle, needDisableSet);
-}
-
-TExcelTable *TExcelSheet::CreateTable(TDBGridEh *gridEh, bool needDisableSet)
-{
-    return CreateTable(1, 1, gridEh, needDisableSet);
+	TExcelTable* out = new TExcelTable(this, vDataChild);
+	return out;
 }
 
 TExcelTable* TExcelSheet::CreatePivotTable(
@@ -272,25 +262,6 @@ TExcelTable* TExcelSheet::CreatePivotTable(
 	TPivotTableCreator* creator = new TPivotTableCreator(srcTable);
 	out = creator->CreateTable(this, startColumn, startRow, pivotSettings);
 
-	return out;
-}
-
-TExcelTable* TExcelSheet::GetTable(const String& tableName)
-{
-	//seekAndSetDataChild("ListObjects", tableName);
-//	vDataChild = ; //;
-
-	int t = vData.OlePropertyGet("ListObjects").OlePropertyGet("Count");
-	vDataChild = vData.OlePropertyGet("ListObjects").OlePropertyGet("Item", System::StringToOleStr(tableName));
-
-	//vDataChild = GetParentVariant()
-
-	//.OlePropertyGet("ListObjects");
-
-	//int y = vDataChild.OlePropertyGet("Count");
-
-	// ; //.OlePropertyGet("Item", );
-	TExcelTable* out = new TExcelTable(this, vDataChild);
 	return out;
 }
 

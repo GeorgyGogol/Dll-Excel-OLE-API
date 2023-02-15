@@ -10,23 +10,21 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-TExcelWorkbook::TExcelWorkbook(const TExcelWorkbook& src)
-	: TExcelObjectTemplate<TExcelWorkbook>(src)
-{}
-
-TExcelWorkbook::TExcelWorkbook(TExcelObject* pParent, const Variant& data)
-    : TExcelObjectTemplate<TExcelWorkbook>(pParent, data)
+TExcelWorkbook::TExcelWorkbook(TExcelObject* pParent, const Variant& data) :
+	TExcelObjectTemplate<TExcelWorkbook>(pParent, data)
+	//ACreateTableController()
 {
 	seekAndSetDataChild("Sheets", 1);
 	vDataChild.OleProcedure("Activate");
 }
 
-TExcelWorkbook::~TExcelWorkbook()
+TExcelWorkbook::TExcelWorkbook(const TExcelWorkbook& src) :
+	TExcelObjectTemplate<TExcelWorkbook>(src)
+	//ACreateTableController()
 {}
 
-/* TExcelApp* TExcelWorkbook::getExcel() {
-    return (TExcelApp*)getParent();
-} */
+TExcelWorkbook::~TExcelWorkbook()
+{}
 
 unsigned int TExcelWorkbook::SheetCount() {
     return getChildCountByType("Sheets");
@@ -80,48 +78,6 @@ TExcelSheet* TExcelWorkbook::GetSheet(unsigned int N) {
 	return out;
 }
 
-TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName, const String &tableTitle, const String &tableName, bool needDisableSet)
-{
-	//TExcelSheet* aim = CreateSheet(sheetName);
-	//TExcelTable* out;
-    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, tableTitle, tableName, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName, const String &tableTitle, bool needDisableSet)
-{
-    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, tableTitle, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName, bool needDisableSet)
-{
-    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, bool needDisableSet)
-{
-    return CreateSheet()->CreateTable(1, 1, dataSet, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName, const String &tableTitle, const String &tableName, bool needDisableSet)
-{
-    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, tableTitle, tableName, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName, const String &tableTitle, bool needDisableSet)
-{
-    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, tableTitle, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName, bool needDisableSet)
-{
-    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, needDisableSet);
-}
-
-TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, bool needDisableSet)
-{
-    return CreateSheet()->CreateTable(1, 1, gridEh);
-}
-
 TExcelWorkbook* TExcelWorkbook::Save()
 {
 	vData.OleProcedure("Save");
@@ -138,6 +94,48 @@ TExcelWorkbook* TExcelWorkbook::Save(const String filePath)
 	}
     return this;
 }
+
+/* TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName, const String &tableTitle, const String &tableName)
+{
+	//TExcelSheet* aim = CreateSheet(sheetName);
+	//TExcelTable* out;
+    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, tableTitle, tableName, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName, const String &tableTitle)
+{
+    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, tableTitle, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet, const String &sheetName)
+{
+    return CreateSheet(sheetName)->CreateTable(1, 1, dataSet, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDataSet *dataSet)
+{
+    return CreateSheet()->CreateTable(1, 1, dataSet, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName, const String &tableTitle, const String &tableName)
+{
+    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, tableTitle, tableName, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName, const String &tableTitle)
+{
+    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, tableTitle, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh, const String &sheetName)
+{
+    return CreateSheet(sheetName)->CreateTable(1, 1, gridEh, needDisableSet);
+}
+
+TExcelTable *TExcelWorkbook::CreateTable(TDBGridEh *gridEh)
+{
+    return CreateSheet()->CreateTable(1, 1, gridEh);
+} */
 
 TExcelNameItem* TExcelWorkbook::GetNameItem(const String& itemName)
 {
@@ -162,5 +160,4 @@ TExcelNameItem* TExcelWorkbook::AddNamedItem(const String& itemName)
 }
 
 }
-
 

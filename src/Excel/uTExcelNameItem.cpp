@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "uTExcelNameItem.h"
-#include "uVariantCorrectInserter.h"
+#include "uFunctions.h"
 
 //---------------------------------------------------------------------------
 
@@ -13,8 +13,6 @@
 //---------------------------------------------------------------------------
 namespace exl {
 //---------------------------------------------------------------------------
-    //TExcelNameItem::TExcelNameItem();
-
 TExcelNameItem::TExcelNameItem(TExcelObject* pParent, const Variant& data)
 	: TExcelObjectTemplate<TExcelNameItem>(pParent, data)
 {
@@ -28,23 +26,22 @@ TExcelNameItem::TExcelNameItem(const TExcelNameItem& src)
 TExcelNameItem::~TExcelNameItem() 
 {}
 
+/// @param val Значение
+/// @note Передаваемое значение должно записаться именно как значение
 TExcelNameItem* TExcelNameItem::SetValue(const Variant& val)
 {
-	//vDataChild = vData.OlePropertyGet("Names").OleFunction("Item", System::StringToOleStr(itemName));
-	//Variant vbuf;
-
-
-	CorrectInsert::InsertIntoSingleVariant(val, vData);
-	//vData.OlePropertySet("Value", val);
+	CorrectInsert::InsertIntoVarCell(val, vData);
 	return this;
 }
 
+/// @param val Строка
 TExcelNameItem* TExcelNameItem::SetValue(const String& val)
 {
 	vData.OlePropertySet("Value", System::StringToOleStr(val));
 	return this;
 }
 
+/// @param address Формула или ссылка на ячейки(у), куда будет указывать это имя
 TExcelNameItem* TExcelNameItem::SetRefers(const String& address)
 {
 	String itemValue = "=\"" + StringReplace(address, "\"", "\"\"", TReplaceFlags()<<rfReplaceAll) + "\"";

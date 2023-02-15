@@ -1,0 +1,80 @@
+# Doxyfile 1.9.6
+
+# This file describes the settings to be used by the documentation system
+# doxygen (www.doxygen.org) for a project.
+
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+
+PROJECT_NAME           = ExcelAPI
+PROJECT_NUMBER         = "0.2.3 alfa"
+PROJECT_BRIEF          = "Библиотека для Borland C++ Builder для общения с MS Excel"
+OUTPUT_DIRECTORY       = .
+CREATE_SUBDIRS         = YES
+CREATE_SUBDIRS_LEVEL   = 4
+OUTPUT_LANGUAGE        = Russian
+FULL_PATH_NAMES        = NO
+
+#---------------------------------------------------------------------------
+# Build related configuration options
+#---------------------------------------------------------------------------
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_PRIV_VIRTUAL   = YES
+EXTRACT_STATIC         = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+
+INPUT                  = ../src \
+                         ../README.md \
+                         ../TODO.md \
+                         dGroups.h
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.cpp \
+                         *.md \
+                         *.h
+RECURSIVE              = YES
+EXCLUDE                = *history*
+USE_MDFILE_AS_MAINPAGE = ..\README.md
+
+#---------------------------------------------------------------------------
+# Configuration options related to the HTML output
+#---------------------------------------------------------------------------
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE        = DARK
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_MENUS     = YES
+HTML_DYNAMIC_SECTIONS  = YES
+GENERATE_HTMLHELP      = NO
+CHM_FILE               = ExcelAPI.chm
+HHC_LOCATION           =
+
+#---------------------------------------------------------------------------
+# Configuration options related to the LaTeX output
+#---------------------------------------------------------------------------
+
+GENERATE_LATEX         = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the preprocessor
+#---------------------------------------------------------------------------
+
+ENABLE_PREPROCESSING   = NO
+MACRO_EXPANSION        = NO
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           =
+INCLUDE_FILE_PATTERNS  =
+
+
+
+
+
