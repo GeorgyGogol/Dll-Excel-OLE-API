@@ -40,7 +40,7 @@ TGridHeaders::TGridHeaders(TDBGridEh* gridEh)
     // решена.
 }
 
-void TGridHeaders::Add(TGridHeader header) {
+void TGridHeaders::Add(const TGridHeader& header) {
 	if (header.Visible) nVisible++;
 	Headers.push_back(header);
 
@@ -101,6 +101,7 @@ Variant TGridHeaders::generateVariant() {
 	Variant varHeaders(OPENARRAY(int, (1, 1, 1, nVisible + 1)), varVariant);
 
 	Begin();
+	if (!it->Visible) NextVisible();
 	for (unsigned int tabCol = 1; !Eof(); NextVisible(), ++tabCol)
 	{
 		varHeaders.PutElement(CurrentHeader()->Caption, 1, tabCol); // 1 - строка
