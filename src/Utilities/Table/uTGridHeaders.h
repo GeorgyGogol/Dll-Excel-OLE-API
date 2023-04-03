@@ -26,7 +26,7 @@ private:
     unsigned int nVisible;
 
 public:
-	void Add(TGridHeader header);
+	void Add(const TGridHeader& header);
 	unsigned int CountVisible() const;
 	unsigned int Count() const;
 	unsigned int Deep() const;

@@ -51,7 +51,7 @@ ExcelException::ExcelException(const char* classWhere, const char* method, const
 void ExcelException::WriteError(const String& error)
 {
     TLog* log = new TLog(CallLogReason::Error);
-    log->WriteLog(error.t_str());
+    log->WriteLog(error.c_str());
     delete log;
 }
 

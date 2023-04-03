@@ -67,21 +67,21 @@ void TTableCreator::readDataSet(TDataSet* dataSet) {
 	Variant varArr(OPENARRAY(int, (1, nRecords, 1, cols)), varVariant);
 
     // Считаем данные
-	unsigned int tabColPassed; // Кол-во пропущенных столбиков
+	unsigned int tabColPassed = 0; // Кол-во пропущенных столбиков
 	unsigned int pos = 1; // Счетчик по записям
 
-	for (dataSet->First(); !dataSet->Eof && pos < nRecords + 1; dataSet->Next(), pos++)
-	{
-        tabColPassed = 0;
-		for (unsigned int tabCol = 0; tabCol < Headers->Count(); tabCol++) {
-			if (!Headers->GetHeader(tabCol)->Visible) {
-				tabColPassed++;
-				continue;
-			}
+	for (unsigned int colPos = 0; colPos < Headers->Count(); ++colPos) {
+		if (!Headers->GetHeader(colPos)->Visible) {
+			tabColPassed++;
+			continue;
+		}
 
+		pos = 1;
+		for (dataSet->First(); !dataSet->Eof && pos < nRecords + 1; dataSet->Next(), pos++)
+		{
 			CorrectInsert::InsertIntoVarArray(
-				dataSet->Fields->FieldByName(Headers->GetHeader(tabCol)->FieldName)->AsString,
-				varArr, pos, tabCol + 1 - tabColPassed, "0"
+				dataSet->Fields->FieldByName(Headers->GetHeader(colPos)->FieldName)->AsString,
+				varArr, pos, colPos + 1 - tabColPassed, "0"
 			);
         }
 	}
